@@ -710,7 +710,11 @@
     min-width: 0;
     position: relative;
   }
-  .phase-chip:hover:not(.bypassed) { border-color: var(--border-strong); }
+  .phase-chip:hover:not(.bypassed) {
+    border-color: var(--accent);
+    background: linear-gradient(90deg, var(--accent-softer), var(--bg-primary) 70%);
+  }
+  .phase-chip:active:not(.bypassed) { transform: scale(0.98); }
   .phase-chip.active {
     border-color: var(--accent);
     background: linear-gradient(90deg, var(--accent-softer), var(--bg-primary) 60%);
@@ -890,6 +894,7 @@
     transition: border-color var(--dur-base) var(--ease-out),
                 background var(--dur-base) var(--ease-out);
   }
+  .step-card.active { overflow: visible; }
   .step-card::before {
     content: '';
     position: absolute;
@@ -903,11 +908,11 @@
     border-color: var(--accent);
     background: linear-gradient(90deg, var(--accent-softer) 0%, var(--bg-primary) 60%);
     flex: 1 1 auto;
+    min-height: 200px;
     display: flex;
     flex-direction: column;
-    min-height: 0;
   }
-  .step-card.active::before { background: var(--accent); }
+  .step-card.active::before { display: none; }
 
   .step-compact {
     display: grid;
@@ -985,7 +990,6 @@
     gap: 0.55rem;
     flex: 1 1 auto;
     min-height: 0;
-    overflow: hidden;
   }
   .step-card.active .step-expanded {
     display: flex;
@@ -1236,61 +1240,111 @@
   }
 
   /* Toast */
+  /* Migration Complete — centered celebration modal */
+  .toast-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    z-index: 199;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--dur-slow) var(--ease-out);
+  }
+  .toast-backdrop.visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
   .toast {
     position: fixed;
-    top: 1rem;
-    right: 1rem;
+    top: 50%;
+    left: 50%;
     z-index: 200;
     background: linear-gradient(
       135deg,
-      rgba(76, 175, 80, 0.22),
-      rgba(76, 175, 80, 0.08)
+      rgba(76, 175, 80, 0.28),
+      rgba(76, 175, 80, 0.12)
     );
-    border: 1px solid rgba(76, 175, 80, 0.5);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-radius: 11px;
-    padding: 0.8rem 1rem;
+    border: 1px solid rgba(76, 175, 80, 0.6);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-radius: 16px;
+    padding: 1.6rem 2rem;
     display: flex;
-    gap: 0.75rem;
+    flex-direction: column;
+    gap: 1rem;
     align-items: center;
-    max-width: 380px;
+    text-align: center;
+    max-width: 420px;
+    min-width: 340px;
     opacity: 0;
-    transform: translateX(400px);
+    transform: translate(-50%, -50%) scale(0.85);
     transition: opacity var(--dur-slow) var(--ease-out),
                 transform var(--dur-slow) var(--ease-out);
     pointer-events: none;
+    box-shadow:
+      0 20px 60px rgba(0, 0, 0, 0.5),
+      0 0 0 1px rgba(255, 255, 255, 0.05);
   }
   .toast.visible {
     opacity: 1;
-    transform: translateX(0);
+    transform: translate(-50%, -50%) scale(1);
     pointer-events: auto;
   }
   .toast-icon {
-    width: 34px; height: 34px;
-    border-radius: 9px;
+    width: 64px; height: 64px;
+    border-radius: 50%;
     background: var(--status-ok);
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
     font-family: var(--font-heading);
-    font-weight: 700;
-    color: var(--text-primary);
-    font-size: 1rem;
+    font-weight: 900;
+    color: var(--bg-primary);
+    font-size: 2.2rem;
+    box-shadow: 0 0 0 8px rgba(76, 175, 80, 0.18);
+    animation: check-pop 500ms var(--ease-out);
   }
+  @keyframes check-pop {
+    0%   { transform: scale(0); opacity: 0; }
+    60%  { transform: scale(1.15); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  .toast-body { text-align: center; }
   .toast-body h4 {
     font-family: var(--font-heading);
     color: var(--text-primary);
-    font-size: 0.84rem;
-    margin-bottom: 0.18rem;
+    font-size: 1.35rem;
+    margin-bottom: 0.4rem;
     font-weight: 700;
-    letter-spacing: -0.005em;
+    letter-spacing: -0.015em;
   }
   .toast-body p {
     color: var(--text-muted);
+    font-size: 0.88rem;
+    line-height: 1.5;
+  }
+  .toast-close {
+    margin-top: 0.3rem;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    color: var(--text-primary);
+    font-family: var(--font-heading);
     font-size: 0.72rem;
-    line-height: 1.35;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 0.5rem 1.25rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background var(--dur-fast) var(--ease-out),
+                border-color var(--dur-fast) var(--ease-out);
+  }
+  .toast-close:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--text-primary);
   }
 
   /* Responsive */
@@ -1478,13 +1532,15 @@
     </div>
   </div>
 
-  <!-- TOAST -->
-  <div class="toast" id="toastSuccess">
+  <!-- CELEBRATION MODAL -->
+  <div class="toast-backdrop" id="toastBackdrop"></div>
+  <div class="toast" id="toastSuccess" role="dialog" aria-modal="true" aria-labelledby="toastTitle">
     <div class="toast-icon">✓</div>
     <div class="toast-body">
-      <h4>Migration complete</h4>
+      <h4 id="toastTitle">Migration complete</h4>
       <p id="toastText">All steps succeeded · blueprint delivered</p>
     </div>
+    <button class="toast-close" id="toastClose" type="button">Close</button>
   </div>
 
 <script>
@@ -1502,7 +1558,7 @@ const PHASES = [
 const STEPS_ALL = [
   { id: 'V1', phase: 'vision', name: 'Crawling from Live Site',
     desc: 'Capture desktop & mobile views from the live website.',
-    durationSimMs: 5500, realTime: '1m 25s',
+    durationSimMs: 7500, realTime: '1m 25s',
     logs: [
       { icon: 'i', cls: 'info', text: 'Navigating to source URL (desktop + mobile)' },
       { icon: '✓', cls: 'ok',   text: 'Page loaded · capturing <span class="log-hl">2,685 elements</span>' },
@@ -1513,7 +1569,7 @@ const STEPS_ALL = [
   },
   { id: 'V1_5', phase: 'vision', name: 'Crawling from Figma',
     desc: 'Read the design file to understand intended layout and styling.',
-    durationSimMs: 4500, realTime: '48s',
+    durationSimMs: 6000, realTime: '48s',
     requiresFigma: true,
     logs: [
       { icon: 'i', cls: 'info', text: 'Fetching Figma file <span class="log-hl" id="figmaIdEcho">…</span>' },
@@ -1523,7 +1579,7 @@ const STEPS_ALL = [
   },
   { id: 'V2', phase: 'vision', name: 'AI Analysis',
     desc: 'Combine website and design inputs to identify page structure and sections.',
-    durationSimMs: 6500, realTime: '5m 34s',
+    durationSimMs: 8500, realTime: '5m 34s',
     logs: [
       { icon: 'i', cls: 'info', text: 'Preparing desktop + mobile views for analysis...' },
       { icon: '✓', cls: 'ok',   text: 'Mobile analysis received <span class="log-hl">(2m 38s)</span>' },
@@ -1534,7 +1590,7 @@ const STEPS_ALL = [
 
   { id: 'G1', phase: 'combine', name: 'Graph Fetch',
     desc: 'Retrieve structured content from the CMS.',
-    durationSimMs: 3500, realTime: '3.1s',
+    durationSimMs: 4800, realTime: '3.1s',
     logs: [
       { icon: 'i', cls: 'info', text: 'Fetching graph <span class="log-hl" id="g1IdEcho">…</span>' },
       { icon: '✓', cls: 'ok',   text: 'Graph loaded · <span class="log-hl">84 nodes</span> · 142 edges' },
@@ -1542,7 +1598,7 @@ const STEPS_ALL = [
   },
   { id: 'G2', phase: 'combine', name: 'Alignment',
     desc: 'Match CMS content with visual sections identified earlier.',
-    durationSimMs: 4800, realTime: '8.2s',
+    durationSimMs: 6500, realTime: '8.2s',
     action: 'populateBlocks',
     logs: [
       { icon: 'i', cls: 'info', text: 'Aligning captured regions with graph nodes...' },
@@ -1552,7 +1608,7 @@ const STEPS_ALL = [
   },
   { id: 'G3', phase: 'combine', name: 'Smart Merge',
     desc: 'Use CMS data when available, fallback to website/design if needed.',
-    durationSimMs: 3800, realTime: '4.8s',
+    durationSimMs: 5000, realTime: '4.8s',
     logs: [
       { icon: 'i', cls: 'info', text: 'Resolving conflicts across sources...' },
       { icon: '✓', cls: 'ok',   text: 'Merged <span class="log-hl">68 from CMS</span> · 8 from website · 0 conflicts' },
@@ -1560,13 +1616,13 @@ const STEPS_ALL = [
   },
   { id: 'G4', phase: 'combine', name: 'Final Output',
     desc: 'Generate the CMS-ready page directly (JSON).',
-    durationSimMs: 3000, realTime: '1.2s',
+    durationSimMs: 4000, realTime: '1.2s',
     logs: [ { icon: '✓', cls: 'ok', text: 'Blueprint written · <span class="log-hl">blueprint.json</span>' } ]
   },
 
   { id: 'S1', phase: 'orch', name: 'HTML Loading',
     desc: 'Load the page source for processing.',
-    durationSimMs: 2800, realTime: '820ms',
+    durationSimMs: 3800, realTime: '820ms',
     logs: [
       { icon: 'i', cls: 'info', text: 'Loading HTML source from disk...' },
       { icon: '✓', cls: 'ok',   text: 'HTML loaded · <span class="log-hl">412 KB</span>' },
@@ -1574,12 +1630,12 @@ const STEPS_ALL = [
   },
   { id: 'S2', phase: 'orch', name: 'Preprocessing',
     desc: 'Clean and prepare content for accurate extraction.',
-    durationSimMs: 2500, realTime: '140ms',
+    durationSimMs: 3500, realTime: '140ms',
     logs: [ { icon: '✓', cls: 'ok', text: 'HTML normalized · structure validated' } ]
   },
   { id: 'S3', phase: 'orch', name: 'Schema Loading',
     desc: 'Load CMS structure to define the target format.',
-    durationSimMs: 3200, realTime: '4.59s',
+    durationSimMs: 4500, realTime: '4.59s',
     logs: [
       { icon: 'i', cls: 'info', text: 'Loading display template mapping...' },
       { icon: '✓', cls: 'ok',   text: 'Schema ready · <span class="log-hl">42 element types</span>' },
@@ -1587,7 +1643,7 @@ const STEPS_ALL = [
   },
   { id: 'S4', phase: 'orch', name: 'Block Extraction',
     desc: 'Identify key content sections (banners, text, etc.).',
-    durationSimMs: 5500, realTime: '40.30s',
+    durationSimMs: 7500, realTime: '40.30s',
     action: 'populateBlocks',
     logs: [
       { icon: 'i', cls: 'info', text: 'Running contextual block extraction...' },
@@ -1597,7 +1653,7 @@ const STEPS_ALL = [
   },
   { id: 'S5', phase: 'orch', name: 'HTML Chunking',
     desc: 'Split the page into manageable sections.',
-    durationSimMs: 2800, realTime: '460ms',
+    durationSimMs: 3800, realTime: '460ms',
     logs: [
       { icon: 'i', cls: 'info', text: 'Splitting HTML by block ranges...' },
       { icon: '✓', cls: 'ok',   text: '<span class="log-hl">9 chunks</span> generated · 4 extra blocks validated' },
@@ -1605,7 +1661,7 @@ const STEPS_ALL = [
   },
   { id: 'S6', phase: 'orch', name: 'Content Analysis',
     desc: 'Extract text, images, and links in structured form.',
-    durationSimMs: 4500, realTime: '14.57s',
+    durationSimMs: 6000, realTime: '14.57s',
     logs: [
       { icon: 'i', cls: 'info', text: 'Analyzing <span class="log-hl">9 matched blocks</span> in parallel...' },
       { icon: '✓', cls: 'ok',   text: 'All blocks processed · cumulative <span class="log-hl">88.16s</span>' },
@@ -1613,23 +1669,23 @@ const STEPS_ALL = [
   },
   { id: 'S7', phase: 'orch', name: 'Blueprint Merge',
     desc: 'Combine all sections into a complete page.',
-    durationSimMs: 2500, realTime: '10ms',
+    durationSimMs: 3500, realTime: '10ms',
     logs: [ { icon: '✓', cls: 'ok', text: 'Blueprint merged · <span class="log-hl">9 blocks</span> · 0 conflicts' } ]
   },
   { id: 'S8', phase: 'orch', name: 'CSS Enrichment',
     desc: 'Align styling with the design system (incl. Figma if provided).',
-    durationSimMs: 2500, realTime: '40ms',
+    durationSimMs: 3500, realTime: '40ms',
     logs: [ { icon: '✓', cls: 'ok', text: '<span class="log-hl">68 settings</span> enriched · 4 tokens mapped' } ]
   },
   { id: 'S9', phase: 'orch', name: 'Final Output',
     desc: 'Generate the final CMS-ready page (JSON).',
-    durationSimMs: 2500, realTime: '10ms',
+    durationSimMs: 3500, realTime: '10ms',
     logs: [ { icon: '✓', cls: 'ok', text: 'Refined blueprint written · <span class="log-hl">blueprint.json</span>' } ]
   },
 
   { id: 'M1', phase: 'mig', name: 'API Migration',
     desc: 'Send the page into the CMS automatically.',
-    durationSimMs: 3500, realTime: '2.35s',
+    durationSimMs: 4800, realTime: '2.35s',
     logs: [
       { icon: 'i', cls: 'info', text: 'Collecting 1 blueprint for upload...' },
       { icon: 'i', cls: 'info', text: 'POST blueprint · <span class="log-hl">142 KB</span>' },
@@ -1744,7 +1800,7 @@ function buildPhaseStrip() {
       ${isBypassed ? '<span class="chip-bypass">Skip</span>' : ''}
     `;
     if (!isBypassed && slideIdx >= 0) {
-      el.addEventListener('click', () => { if (!isPlaying) goToSlide(slideIdx); });
+      el.addEventListener('click', () => goToSlide(slideIdx));
     }
     strip.appendChild(el);
   });
@@ -1823,6 +1879,26 @@ function updateCarouselPosition() {
 function goToSlide(idx) {
   currentCarouselIdx = idx;
   updateCarouselPosition();
+
+  // After slide transition, scroll the slide's step list to show active step (or top)
+  schedule(() => {
+    const track = $('#carouselTrack');
+    const slide = track.children[idx];
+    if (!slide) return;
+    const stepsContainer = slide.querySelector('.slide-steps');
+    if (!stepsContainer) return;
+    const active = stepsContainer.querySelector('.step-card.active');
+    if (active) {
+      const containerRect = stepsContainer.getBoundingClientRect();
+      const cardRect = active.getBoundingClientRect();
+      const targetScrollTop = stepsContainer.scrollTop
+        + (cardRect.top - containerRect.top)
+        - (containerRect.height * 0.15);
+      stepsContainer.scrollTo({ top: targetScrollTop, behavior: 'smooth' });
+    } else {
+      stepsContainer.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, 700); // wait for carousel transition (640ms) to finish
 }
 
 function setPhaseState(phaseId, state) {
@@ -2055,6 +2131,19 @@ function runStep(i) {
   const statusText = card.querySelector('.status-text');
   if (statusText) statusText.textContent = 'Running';
 
+  // Auto-scroll active step into view (smooth, centered in scrollable parent)
+  schedule(() => {
+    const stepsContainer = card.closest('.slide-steps');
+    if (!stepsContainer) return;
+    const containerRect = stepsContainer.getBoundingClientRect();
+    const cardRect = card.getBoundingClientRect();
+    // Scroll so active card top aligns with ~20% from top of container (not stuck at edge)
+    const targetScrollTop = stepsContainer.scrollTop
+      + (cardRect.top - containerRect.top)
+      - (containerRect.height * 0.15);
+    stepsContainer.scrollTo({ top: targetScrollTop, behavior: 'smooth' });
+  }, 150);
+
   $('#currentStepLabel').innerHTML = `<span style="color:var(--accent)">${step.id.replace('_','.')}</span> · ${step.name}`;
 
   const duration = step.durationSimMs / speed;
@@ -2112,7 +2201,7 @@ function completeStep(i) {
 
   schedule(() => {
     if (isPlaying) runStep(i + 1);
-  }, 650 / speed);
+  }, 1000 / speed);
 }
 
 function finishRun() {
@@ -2153,7 +2242,7 @@ function finishRun() {
     ? `Graph-assisted migration finished in ${totalStr}`
     : `DOM enrichment finished in ${totalStr}`;
   $('#toastSuccess').classList.add('visible');
-  schedule(() => { $('#toastSuccess').classList.remove('visible'); }, 5000);
+  $('#toastBackdrop').classList.add('visible');
 }
 
 function tickClock() {
@@ -2300,6 +2389,7 @@ function start() {
   $('#overallFill').classList.remove('done');
   $('#overallPct').textContent = '0%';
   $('#toastSuccess').classList.remove('visible');
+  $('#toastBackdrop').classList.remove('visible');
   $('#blocksList').innerHTML = '<div class="result-empty">No blocks yet<span class="hint">Populated as steps complete</span></div>';
   $('#blocksCount').textContent = 'Populated as steps complete';
   $('#outputStatus').textContent = 'Waiting for run';
@@ -2342,6 +2432,7 @@ function reset() {
   $('#overallFill').classList.remove('done');
   $('#overallPct').textContent = '0%';
   $('#toastSuccess').classList.remove('visible');
+  $('#toastBackdrop').classList.remove('visible');
   $('#blocksList').innerHTML = '<div class="result-empty">No blocks yet<span class="hint">Populated as steps complete</span></div>';
   $('#blocksCount').textContent = 'Populated as steps complete';
   $('#outputStatus').textContent = 'Waiting for run';
@@ -2358,6 +2449,17 @@ function reset() {
 
 $('#playBtn').addEventListener('click', () => { if (isPlaying) stop(); else start(); });
 $('#restartBtn').addEventListener('click', reset);
+
+// Close celebration modal
+function closeToast() {
+  $('#toastSuccess').classList.remove('visible');
+  $('#toastBackdrop').classList.remove('visible');
+}
+$('#toastClose').addEventListener('click', closeToast);
+$('#toastBackdrop').addEventListener('click', closeToast);
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && $('#toastSuccess').classList.contains('visible')) closeToast();
+});
 
 // Init
 updateUrlCount();
