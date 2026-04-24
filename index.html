@@ -1373,7 +1373,7 @@
       <div class="top-meta">
         <span class="route-chip" id="routeChip">
           <span class="label">MODE:</span>
-          <span class="path" id="routePath">Vision → DOM Enrichment → Migration</span>
+          <span class="path" id="routePath">Vision → Live Site → Migration</span>
         </span>
         <div class="live-clock" id="liveClock">
           <span class="dot"></span>
@@ -1454,7 +1454,7 @@
                 </span>
                 <input type="text" id="inpGraphId" placeholder="enable + paste your Optimizely GraphID" value="opti-graph-a1b2c3" disabled />
               </div>
-              <div class="cfg-meta info" id="inpGraphIdMeta">Toggle off → DOM enrichment route</div>
+              <div class="cfg-meta info" id="inpGraphIdMeta">Toggle off → Live Site extraction route</div>
             </div>
           </div>
         </div>
@@ -1463,7 +1463,7 @@
         <div class="carousel-col">
           <div class="section-header">
             <span class="section-label">Phase Timeline</span>
-            <span class="section-hint">4 phases · active mode highlighted</span>
+            <span class="section-hint">3 phases · click a phase to jump</span>
           </div>
           <div class="phase-strip" id="phaseStrip"></div>
 
@@ -1549,10 +1549,10 @@
 // ═════════════════════════════════════════════════════════════════════════
 
 const PHASES = [
-  { id: 'vision',  num: '01',   name: 'Vision',            sub: 'Understand the page from website & design' },
-  { id: 'combine', num: '02·A', name: 'Vision × Graph',    sub: 'Fast-path — graph-assisted combination' },
-  { id: 'orch',    num: '02·B', name: 'DOM Enrichment',    sub: 'Auto reconstruction from DOM' },
-  { id: 'mig',     num: '03',   name: 'Migration',         sub: 'Publish the page into the CMS' },
+  { id: 'vision',  num: '01', name: 'DESIGN TOKENIZATION & VISION', sub: 'Extract design tokens (colors, typography, etc.) and use Computer Vision to understand the page layout' },
+  { id: 'combine', num: '02', name: 'EXTRACT CONTENT FROM OPTIMIZELY GRAPH', sub: 'Fast-path — pull page content straight from Optimizely Graph' },
+  { id: 'orch',    num: '02', name: 'EXTRACT CONTENT FROM LIVE SITE',       sub: 'Extract content exactly as it appears on the live website' },
+  { id: 'mig',     num: '03', name: 'MIGRATION',                             sub: 'Publish the page into the CMS' },
 ];
 
 const STEPS_ALL = [
@@ -1607,7 +1607,7 @@ const STEPS_ALL = [
     ]
   },
   { id: 'G3', phase: 'combine', name: 'Smart Merge',
-    desc: 'Use CMS data when available, fallback to website/design if needed.',
+    desc: 'Keep CMS content when available; use the website version only when needed.',
     durationSimMs: 5000, realTime: '4.8s',
     logs: [
       { icon: 'i', cls: 'info', text: 'Resolving conflicts across sources...' },
@@ -1615,13 +1615,13 @@ const STEPS_ALL = [
     ]
   },
   { id: 'G4', phase: 'combine', name: 'Final Output',
-    desc: 'Generate the CMS-ready page directly (JSON).',
+    desc: 'Assemble the final CMS-ready page.',
     durationSimMs: 4000, realTime: '1.2s',
     logs: [ { icon: '✓', cls: 'ok', text: 'Blueprint written · <span class="log-hl">blueprint.json</span>' } ]
   },
 
   { id: 'S1', phase: 'orch', name: 'HTML Loading',
-    desc: 'Load the page source for processing.',
+    desc: 'Open the webpage for processing.',
     durationSimMs: 3800, realTime: '820ms',
     logs: [
       { icon: 'i', cls: 'info', text: 'Loading HTML source from disk...' },
@@ -1634,7 +1634,7 @@ const STEPS_ALL = [
     logs: [ { icon: '✓', cls: 'ok', text: 'HTML normalized · structure validated' } ]
   },
   { id: 'S3', phase: 'orch', name: 'Schema Loading',
-    desc: 'Load CMS structure to define the target format.',
+    desc: 'Load the CMS page template to know where each content piece should go.',
     durationSimMs: 4500, realTime: '4.59s',
     logs: [
       { icon: 'i', cls: 'info', text: 'Loading display template mapping...' },
@@ -1660,7 +1660,7 @@ const STEPS_ALL = [
     ]
   },
   { id: 'S6', phase: 'orch', name: 'Content Analysis',
-    desc: 'Extract text, images, and links in structured form.',
+    desc: 'Extract text, images, and links from each section.',
     durationSimMs: 6000, realTime: '14.57s',
     logs: [
       { icon: 'i', cls: 'info', text: 'Analyzing <span class="log-hl">9 matched blocks</span> in parallel...' },
@@ -1673,12 +1673,12 @@ const STEPS_ALL = [
     logs: [ { icon: '✓', cls: 'ok', text: 'Blueprint merged · <span class="log-hl">9 blocks</span> · 0 conflicts' } ]
   },
   { id: 'S8', phase: 'orch', name: 'CSS Enrichment',
-    desc: 'Align styling with the design system (incl. Figma if provided).',
+    desc: 'Apply colors, fonts, and spacing to match the design system.',
     durationSimMs: 3500, realTime: '40ms',
     logs: [ { icon: '✓', cls: 'ok', text: '<span class="log-hl">68 settings</span> enriched · 4 tokens mapped' } ]
   },
   { id: 'S9', phase: 'orch', name: 'Final Output',
-    desc: 'Generate the final CMS-ready page (JSON).',
+    desc: 'Assemble the final CMS-ready page.',
     durationSimMs: 3500, realTime: '10ms',
     logs: [ { icon: '✓', cls: 'ok', text: 'Refined blueprint written · <span class="log-hl">blueprint.json</span>' } ]
   },
@@ -1773,18 +1773,16 @@ function formatTotalTime(sec) {
   return `${m}m ${String(s).padStart(2,'0')}s`;
 }
 
-// ─── Build phase strip (all 4 phases, top of carousel) ──────────────
+// ─── Build phase strip (active phases only, top of carousel) ──────────
 function buildPhaseStrip() {
+  computeActiveSteps();
   const route = getRoute();
   const strip = $('#phaseStrip');
   strip.innerHTML = '';
-  PHASES.forEach(phase => {
-    const isBypassed = route.bypassed.includes(phase.id);
-    const activePhases = getActivePhases();
-    const slideIdx = activePhases.findIndex(p => p.id === phase.id);
-
+  const activePhases = getActivePhases();
+  activePhases.forEach((phase, slideIdx) => {
     const el = document.createElement('div');
-    el.className = 'phase-chip' + (isBypassed ? ' bypassed' : '');
+    el.className = 'phase-chip';
     el.id = 'chip-' + phase.id;
     const stepCount = STEPS_ALL.filter(s => {
       if (s.phase !== phase.id) return false;
@@ -1795,13 +1793,10 @@ function buildPhaseStrip() {
       <div class="num">${phase.num}</div>
       <div class="chip-body">
         <div class="chip-name">${phase.name}</div>
-        <div class="chip-meta">${isBypassed ? 'not used in this route' : stepCount + ' step' + (stepCount > 1 ? 's' : '')}</div>
+        <div class="chip-meta">${stepCount} step${stepCount > 1 ? 's' : ''}</div>
       </div>
-      ${isBypassed ? '<span class="chip-bypass">Skip</span>' : ''}
     `;
-    if (!isBypassed && slideIdx >= 0) {
-      el.addEventListener('click', () => goToSlide(slideIdx));
-    }
+    el.addEventListener('click', () => goToSlide(slideIdx));
     strip.appendChild(el);
   });
 }
@@ -1865,8 +1860,8 @@ function buildCarousel() {
   });
 
   $('#routePath').textContent = route.hasGraph
-    ? 'Vision → Vision × Graph → Migration'
-    : 'Vision → DOM Enrichment → Migration';
+    ? 'Vision → Optimizely Graph → Migration'
+    : 'Vision → Live Site → Migration';
 
   currentCarouselIdx = 0;
   updateCarouselPosition();
@@ -2237,10 +2232,6 @@ function finishRun() {
   const hintDone = $('#currentPhaseHint');
   if (hintDone) hintDone.textContent = '✓ Pipeline complete · blueprint delivered';
 
-  const route = getRoute();
-  $('#toastText').textContent = route.hasGraph
-    ? `Graph-assisted migration finished in ${totalStr}`
-    : `DOM enrichment finished in ${totalStr}`;
   $('#toastSuccess').classList.add('visible');
   $('#toastBackdrop').classList.add('visible');
 }
@@ -2286,7 +2277,7 @@ function updateGraphField() {
   field.classList.toggle('disabled', !on);
   if (label) label.textContent = on ? 'ON' : 'OFF';
   if (!on) {
-    meta.textContent = 'Toggle off → DOM enrichment route';
+    meta.textContent = 'Toggle off → Live Site extraction route';
     meta.className = 'cfg-meta info';
     return;
   }
