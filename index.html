@@ -121,64 +121,6 @@
     font-size: 1.15rem;
     letter-spacing: -0.015em;
   }
-  .top-meta {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-  }
-  .route-chip {
-    font-family: var(--font-mono);
-    font-size: 0.68rem;
-    background: var(--bg-secondary);
-    border: 1px solid var(--border);
-    padding: 0.42rem 0.75rem;
-    border-radius: 8px;
-    color: var(--text-muted);
-    display: inline-flex;
-    align-items: center;
-    gap: 0.45rem;
-    letter-spacing: 0.02em;
-  }
-  .route-chip .label { color: var(--accent); font-weight: 700; }
-  .route-chip .path { color: var(--text-primary); font-weight: 500; }
-  .live-clock {
-    font-family: var(--font-mono);
-    font-size: 0.8rem;
-    color: var(--text-primary);
-    background: var(--bg-secondary);
-    padding: 0.42rem 0.8rem;
-    border-radius: 8px;
-    border: 1px solid var(--border);
-    display: inline-flex;
-    align-items: center;
-    gap: 0.55rem;
-    transition: border-color var(--dur-base) var(--ease-out);
-  }
-  .live-clock.running { border-color: var(--accent); }
-  .live-clock.done { border-color: rgba(76, 175, 80, 0.35); }
-  .live-clock .dot {
-    width: 7px; height: 7px;
-    border-radius: 50%;
-    background: var(--text-faint);
-    transition: background var(--dur-base) var(--ease-out);
-    position: relative;
-  }
-  .live-clock.running .dot { background: var(--status-ok); }
-  .live-clock.running .dot::after {
-    content: '';
-    position: absolute;
-    inset: -4px;
-    border-radius: 50%;
-    background: var(--status-ok);
-    opacity: 0.35;
-    animation: halo 1.6s var(--ease-in-out) infinite;
-  }
-  .live-clock.done .dot { background: var(--status-ok); }
-  @keyframes halo {
-    0%   { transform: scale(0.7); opacity: 0.5; }
-    80%  { transform: scale(1.8); opacity: 0; }
-    100% { transform: scale(1.8); opacity: 0; }
-  }
 
   /* ═══ Config fields (used inside .config-stack in right column) ═══ */
   .cfg-field { display: flex; flex-direction: column; gap: 0.3rem; min-width: 0; }
@@ -1317,7 +1259,7 @@
     font-family: var(--font-heading);
     color: var(--text-primary);
     font-size: 1.35rem;
-    margin-bottom: 0.4rem;
+    margin-bottom: 0;
     font-weight: 700;
     letter-spacing: -0.015em;
   }
@@ -1369,16 +1311,6 @@
     <div class="topbar">
       <div class="brand">
         <div class="brand-text"><span class="product">AI Migrator</span></div>
-      </div>
-      <div class="top-meta">
-        <span class="route-chip" id="routeChip">
-          <span class="label">MODE:</span>
-          <span class="path" id="routePath">Vision → Live Site → Migration</span>
-        </span>
-        <div class="live-clock" id="liveClock">
-          <span class="dot"></span>
-          <span id="clockText">00:00:00</span>
-        </div>
       </div>
     </div>
 
@@ -1538,7 +1470,6 @@
     <div class="toast-icon">✓</div>
     <div class="toast-body">
       <h4 id="toastTitle">Migration complete</h4>
-      <p id="toastText">All steps succeeded · blueprint delivered</p>
     </div>
     <button class="toast-close" id="toastClose" type="button">Close</button>
   </div>
@@ -1719,7 +1650,6 @@ let isPlaying = false;
 let currentStepIdx = -1;
 let runStartTime = 0;
 let pendingTimeouts = [];
-let clockAnimFrame = null;
 let ACTIVE_STEPS = [];
 let ACTIVE_PHASE_IDS = [];
 let currentCarouselIdx = 0;
@@ -1858,10 +1788,6 @@ function buildCarousel() {
       stepsContainer.appendChild(card);
     });
   });
-
-  $('#routePath').textContent = route.hasGraph
-    ? 'Vision → Optimizely Graph → Migration'
-    : 'Vision → Live Site → Migration';
 
   currentCarouselIdx = 0;
   updateCarouselPosition();
@@ -2201,7 +2127,6 @@ function completeStep(i) {
 
 function finishRun() {
   isPlaying = false;
-  cancelAnimationFrame(clockAnimFrame);
   if (ACTIVE_STEPS.length > 0) {
     const lastPhase = ACTIVE_STEPS[ACTIVE_STEPS.length - 1].phase;
     setPhaseState(lastPhase, 'done');
@@ -2221,10 +2146,6 @@ function finishRun() {
   $('#playIcon').innerHTML = '<path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/>';
   $('#playBtn').classList.remove('running');
   $('#playBtn').disabled = !validateInputs();
-  $('#liveClock').classList.remove('running');
-  $('#liveClock').classList.add('done');
-  const m = Math.floor(totalSec / 60); const s = Math.round(totalSec % 60);
-  $('#clockText').textContent = `00:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
   $('#overallFill').classList.add('done');
   $('#overallFill').style.width = '100%';
   $('#overallPct').textContent = '100%';
@@ -2237,16 +2158,7 @@ function finishRun() {
 }
 
 function tickClock() {
-  if (!isPlaying) return;
-  const elapsedReal = performance.now() - runStartTime;
-  const totalSim = totalSimMs();
-  const ratio = Math.min(1, elapsedReal / (totalSim / speed));
-  const totalSec = totalRealSec();
-  const displayedSec = Math.floor(ratio * totalSec);
-  const m = Math.floor(displayedSec / 60);
-  const s = displayedSec % 60;
-  $('#clockText').textContent = `00:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-  clockAnimFrame = requestAnimationFrame(tickClock);
+  // Clock UI removed; no-op retained so start/stop calls don't break
 }
 
 // ─── Validation + field updaters ───────────────────────────────────
@@ -2373,7 +2285,6 @@ $('#figmaToggle').addEventListener('change', updateRouteAndRebuild);
 function start() {
   if (!validateInputs()) return;
   clearAllTimeouts();
-  cancelAnimationFrame(clockAnimFrame);
   resetRunUI();
   resetOutput();
   $('#overallFill').style.width = '0%';
@@ -2391,25 +2302,19 @@ function start() {
   $('#playLabel').textContent = 'Stop';
   $('#playIcon').innerHTML = '<path d="M6 6h12v12H6z"/>';
   $('#playBtn').classList.add('running');
-  $('#liveClock').classList.add('running');
-  $('#liveClock').classList.remove('done');
   runStep(0);
-  tickClock();
 }
 
 function stop() {
   isPlaying = false;
   clearAllTimeouts();
-  cancelAnimationFrame(clockAnimFrame);
   $('#playLabel').textContent = 'Start';
   $('#playIcon').innerHTML = '<path d="M8 5v14l11-7z"/>';
   $('#playBtn').classList.remove('running');
-  $('#liveClock').classList.remove('running');
 }
 
 function reset() {
   clearAllTimeouts();
-  cancelAnimationFrame(clockAnimFrame);
   isPlaying = false;
   currentStepIdx = -1;
   updateUrlCount();
@@ -2430,8 +2335,6 @@ function reset() {
   $('#currentStepLabel').textContent = 'Ready · Press START to run';
   const hintEl = $('#currentPhaseHint');
   if (hintEl) hintEl.textContent = 'Waiting for run';
-  $('#liveClock').classList.remove('running', 'done');
-  $('#clockText').textContent = '00:00:00';
   $('#playLabel').textContent = 'Start';
   $('#playIcon').innerHTML = '<path d="M8 5v14l11-7z"/>';
   $('#playBtn').classList.remove('running');
