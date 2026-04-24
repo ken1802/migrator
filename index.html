@@ -1,0 +1,2371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AI Migrator — Niteco</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ═══════════════════════════════════════════════════════════════════
+     NITECO BRAND · AI MIGRATOR · Design System v8
+     ═══════════════════════════════════════════════════════════════════ */
+  :root {
+    --bg-primary: #262524;
+    --bg-secondary: #1f1e1d;
+    --bg-tertiary: #2f2e2d;
+    --bg-elevated: #353432;
+    --text-primary: #FFFFFF;
+    --text-heading: #FFD400;
+    --text-body: rgba(255, 255, 255, 0.92);
+    --text-muted: rgba(255, 255, 255, 0.68);
+    --text-faint: rgba(255, 255, 255, 0.55);
+    --text-on-card: #262524;
+    --accent: #FFD400;
+    --accent-hover: #E6BF00;
+    --accent-light: #FFF9E0;
+    --accent-soft: rgba(255, 212, 0, 0.12);
+    --accent-softer: rgba(255, 212, 0, 0.06);
+    --gold-light: #FDF1A4;
+    --gold-mid: #F7DD7B;
+    --gold-dark: #B27F2C;
+    --border: rgba(255, 255, 255, 0.10);
+    --border-strong: rgba(255, 255, 255, 0.22);
+    --border-accent: rgba(255, 212, 0, 0.45);
+    --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.22);
+    --shadow-md: 0 6px 20px rgba(0, 0, 0, 0.32);
+    --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.45);
+    --shadow-glow-accent: 0 0 0 3px rgba(255, 212, 0, 0.14);
+    --status-ok: #4CAF50;
+    --status-skip: #90A4AE;
+    --status-fail: #F44336;
+    --status-warn: #FF9800;
+    --status-info: #2196F3;
+    --font-heading: 'Gilroy', Arial, sans-serif;
+    --font-body: 'Gilroy', Arial, sans-serif;
+    --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+    --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+    --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+    --dur-fast: 160ms;
+    --dur-base: 260ms;
+    --dur-slow: 420ms;
+    --dur-slower: 640ms;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    background: var(--bg-primary);
+    color: var(--text-body);
+    font-family: var(--font-body);
+    font-weight: 400;
+    line-height: 1.45;
+    height: 100vh;
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  /* ═══ Brand decoration ═══ */
+  .dotted-pattern {
+    position: fixed;
+    width: 440px; height: 440px;
+    background: radial-gradient(circle, var(--accent) 1.5px, transparent 1.5px);
+    background-size: 14px 14px;
+    mask-image: radial-gradient(circle at center, black 0%, transparent 65%);
+    -webkit-mask-image: radial-gradient(circle at center, black 0%, transparent 65%);
+    opacity: 0.18; pointer-events: none; z-index: 0;
+  }
+  .dotted-pattern.top-right { top: -180px; right: -180px; }
+  .dotted-pattern.bottom-left { bottom: -180px; left: -180px; }
+
+  /* ═══ App shell ═══ */
+  .app {
+    height: 100vh;
+    display: grid;
+    grid-template-rows: auto auto 1fr;
+    gap: 0.7rem;
+    padding: 0.85rem 1.2rem 5.2rem;
+    max-width: 1600px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ═══ Topbar ═══ */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+  .brand { display: flex; align-items: center; gap: 0.65rem; }
+  .brand-text .product {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    color: var(--text-primary);
+    font-size: 1.15rem;
+    letter-spacing: -0.015em;
+  }
+  .top-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .route-chip {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    padding: 0.42rem 0.75rem;
+    border-radius: 8px;
+    color: var(--text-muted);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    letter-spacing: 0.02em;
+  }
+  .route-chip .label { color: var(--accent); font-weight: 700; }
+  .route-chip .path { color: var(--text-primary); font-weight: 500; }
+  .live-clock {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--text-primary);
+    background: var(--bg-secondary);
+    padding: 0.42rem 0.8rem;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    transition: border-color var(--dur-base) var(--ease-out);
+  }
+  .live-clock.running { border-color: var(--accent); }
+  .live-clock.done { border-color: rgba(76, 175, 80, 0.35); }
+  .live-clock .dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--text-faint);
+    transition: background var(--dur-base) var(--ease-out);
+    position: relative;
+  }
+  .live-clock.running .dot { background: var(--status-ok); }
+  .live-clock.running .dot::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    background: var(--status-ok);
+    opacity: 0.35;
+    animation: halo 1.6s var(--ease-in-out) infinite;
+  }
+  .live-clock.done .dot { background: var(--status-ok); }
+  @keyframes halo {
+    0%   { transform: scale(0.7); opacity: 0.5; }
+    80%  { transform: scale(1.8); opacity: 0; }
+    100% { transform: scale(1.8); opacity: 0; }
+  }
+
+  /* ═══ Config fields (used inside .config-stack in right column) ═══ */
+  .cfg-field { display: flex; flex-direction: column; gap: 0.3rem; min-width: 0; }
+  .cfg-label-row {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 700;
+    min-height: 0.9rem;
+  }
+  .cfg-label-row .dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--accent);
+    flex-shrink: 0;
+  }
+  .cfg-label-row .badge {
+    margin-left: auto;
+    background: var(--bg-tertiary);
+    color: var(--accent);
+    padding: 0.1rem 0.4rem;
+    border-radius: 3px;
+    font-size: 0.58rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+  }
+
+  .cfg-input-wrap { position: relative; display: flex; }
+  .cfg-input-wrap .icon-left {
+    position: absolute;
+    left: 0.65rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-faint);
+    pointer-events: none;
+    display: flex;
+    transition: color var(--dur-fast) var(--ease-out);
+  }
+  .cfg-input-wrap .icon-left svg { width: 13px; height: 13px; }
+  .cfg-input-wrap input,
+  .cfg-input-wrap textarea {
+    flex: 1;
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.5rem 0.65rem 0.5rem 1.95rem;
+    color: var(--text-primary);
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    outline: none;
+    width: 100%;
+    line-height: 1.45;
+    resize: none;
+    transition: border-color var(--dur-fast) var(--ease-out),
+                background var(--dur-fast) var(--ease-out),
+                box-shadow var(--dur-fast) var(--ease-out);
+  }
+  .cfg-input-wrap textarea {
+    min-height: 34px;
+    max-height: 72px;
+    padding-top: 0.55rem;
+  }
+  .cfg-input-wrap textarea.multi-mode { min-height: 56px; }
+  .cfg-input-wrap input::placeholder,
+  .cfg-input-wrap textarea::placeholder { color: var(--text-faint); }
+  .cfg-input-wrap input:hover,
+  .cfg-input-wrap textarea:hover { border-color: var(--border-strong); }
+  .cfg-input-wrap input:focus,
+  .cfg-input-wrap textarea:focus {
+    border-color: var(--accent);
+    box-shadow: var(--shadow-glow-accent);
+  }
+  .cfg-input-wrap input:focus ~ .icon-left,
+  .cfg-input-wrap textarea:focus ~ .icon-left { color: var(--accent); }
+  .cfg-input-wrap input:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    background: var(--bg-secondary);
+    color: var(--text-muted);
+  }
+  .cfg-field.disabled .cfg-input-wrap .icon-left { opacity: 0.4; }
+
+  /* Toggle switch */
+  .toggle-switch {
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    cursor: pointer;
+    user-select: none;
+  }
+  .toggle-switch input { display: none; }
+  .toggle-switch .track {
+    width: 26px; height: 14px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    position: relative;
+    transition: background var(--dur-fast) var(--ease-out),
+                border-color var(--dur-fast) var(--ease-out);
+  }
+  .toggle-switch .track::after {
+    content: '';
+    position: absolute;
+    top: 1px; left: 1px;
+    width: 10px; height: 10px;
+    background: var(--text-muted);
+    border-radius: 50%;
+    transition: transform var(--dur-base) var(--ease-out),
+                background var(--dur-base) var(--ease-out);
+  }
+  .toggle-switch input:checked + .track {
+    background: rgba(255, 212, 0, 0.25);
+    border-color: var(--accent);
+  }
+  .toggle-switch input:checked + .track::after {
+    transform: translateX(12px);
+    background: var(--accent);
+  }
+  .toggle-switch .toggle-label {
+    font-family: var(--font-mono);
+    font-size: 0.58rem;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+    font-weight: 700;
+    min-width: 22px;
+  }
+  .toggle-switch input:checked ~ .toggle-label { color: var(--accent); }
+
+  .cfg-meta {
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    color: var(--text-muted);
+    min-height: 0.9em;
+    line-height: 1.3;
+    transition: color var(--dur-fast) var(--ease-out);
+  }
+  .cfg-meta.ok { color: var(--status-ok); }
+  .cfg-meta.fail { color: var(--status-fail); }
+  .cfg-meta.info { color: var(--status-info); }
+
+  /* ═══ Main area ═══
+     Left = results (Extracted Blocks + System Output)
+     Right = carousel phase/steps
+     ═══════════════════════════════ */
+  .main {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 0.85rem;
+    min-height: 0;
+  }
+
+  /* Control column — config panel on top, carousel below */
+  .control-col {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    gap: 0.6rem;
+    min-height: 0;
+    min-width: 0;
+  }
+
+  /* Config panel (top of control column) */
+  .config-panel {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 11px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    flex-shrink: 0;
+  }
+  .config-stack {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr;
+    gap: 0.85rem;
+    padding: 0.65rem 0.9rem 0.85rem;
+    align-items: start;
+  }
+
+  /* Left: results column */
+  .results-col {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    min-height: 0;
+  }
+  .result-panel {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 11px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+  .result-panel.flex1 { flex: 1 1 auto; }
+  .result-panel-body {
+    padding: 0.6rem 0.75rem;
+    overflow-y: auto;
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+  .result-panel-body::-webkit-scrollbar { width: 5px; }
+  .result-panel-body::-webkit-scrollbar-track { background: transparent; }
+  .result-panel-body::-webkit-scrollbar-thumb {
+    background: var(--bg-tertiary);
+    border-radius: 3px;
+  }
+
+  .result-empty {
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    text-align: center;
+    padding: 1.8rem 0.5rem;
+    line-height: 1.55;
+  }
+  .result-empty .hint {
+    display: block;
+    opacity: 0.8;
+    font-size: 0.62rem;
+    margin-top: 0.4rem;
+  }
+
+  /* Block row */
+  .block-row {
+    display: grid;
+    grid-template-columns: 22px 1fr auto auto;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 0.55rem;
+    background: var(--bg-primary);
+    border-radius: 6px;
+    border-left: 3px solid var(--accent);
+    font-size: 0.7rem;
+    margin-bottom: 0.3rem;
+    opacity: 0;
+    transform: translateX(-4px);
+    animation: block-enter var(--dur-base) var(--ease-out) forwards;
+  }
+  @keyframes block-enter {
+    to { opacity: 1; transform: translateX(0); }
+  }
+  .block-row.skip {
+    border-left-color: var(--status-skip);
+    opacity: 0.72;
+  }
+  .block-row.promoted {
+    border-left-color: var(--status-info);
+  }
+  .block-row .idx {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    color: var(--text-muted);
+    font-size: 0.62rem;
+  }
+  .block-row .bname {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--text-primary);
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .block-row .bstatus {
+    font-family: var(--font-mono);
+    font-size: 0.54rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 0.12rem 0.35rem;
+    border-radius: 3px;
+    font-weight: 700;
+  }
+  .block-row .bstatus.matched { background: rgba(76, 175, 80, 0.18); color: #81c784; }
+  .block-row .bstatus.promoted { background: rgba(33, 150, 243, 0.2); color: #64b5f6; }
+  .block-row .bstatus.skipped { background: rgba(144, 164, 174, 0.25); color: #b0bec5; }
+  .block-row .bsel {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    color: var(--text-muted);
+    font-weight: 500;
+    text-align: right;
+  }
+
+  /* System Output cards */
+  .out-card {
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.6rem 0.75rem;
+    margin-bottom: 0.5rem;
+    opacity: 0;
+    transform: translateY(6px);
+    animation: out-enter var(--dur-slow) var(--ease-out) forwards;
+  }
+  @keyframes out-enter { to { opacity: 1; transform: translateY(0); } }
+  .out-card.accent {
+    border-color: rgba(255, 212, 0, 0.3);
+    background: linear-gradient(90deg, var(--accent-softer), var(--bg-primary) 65%);
+  }
+  .out-card.ok {
+    border-color: rgba(76, 175, 80, 0.4);
+    background: linear-gradient(90deg, rgba(76, 175, 80, 0.10), var(--bg-primary) 65%);
+  }
+  .out-label {
+    font-family: var(--font-mono);
+    font-size: 0.54rem;
+    color: var(--text-muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 0.3rem;
+    font-weight: 600;
+  }
+  .out-value {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--text-primary);
+    word-break: break-all;
+    line-height: 1.4;
+  }
+  .out-value.ok { color: var(--status-ok); font-weight: 600; }
+  .out-stat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.4rem;
+    margin-top: 0.4rem;
+  }
+  .out-stat {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.5rem;
+    text-align: center;
+  }
+  .out-stat .num {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    color: var(--accent);
+    font-size: 1.2rem;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  .out-stat .lab {
+    font-family: var(--font-mono);
+    font-size: 0.54rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-top: 0.25rem;
+    font-weight: 600;
+  }
+
+  /* System Output — 2×2 grid of status tiles */
+  .sys-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+  }
+  .sys-tile {
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.55rem 0.65rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    position: relative;
+    overflow: hidden;
+    transition: border-color var(--dur-base) var(--ease-out),
+                background var(--dur-base) var(--ease-out);
+  }
+  .sys-tile.active {
+    border-color: rgba(255, 212, 0, 0.45);
+    background: linear-gradient(135deg, var(--accent-softer), var(--bg-primary) 60%);
+  }
+  .sys-tile.active.done {
+    border-color: rgba(76, 175, 80, 0.50);
+    background: linear-gradient(135deg, rgba(76, 175, 80, 0.10), var(--bg-primary) 60%);
+  }
+  .sys-tile-head {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-family: var(--font-mono);
+    font-size: 0.54rem;
+    color: var(--text-muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+  .sys-tile-icon {
+    font-size: 0.78rem;
+    filter: grayscale(0.3);
+    transition: filter var(--dur-base) var(--ease-out);
+  }
+  .sys-tile.active .sys-tile-icon { filter: none; }
+  .sys-tile-label { flex: 1; }
+  .sys-tile-check {
+    color: var(--status-ok);
+    font-weight: 700;
+    font-size: 0.7rem;
+    opacity: 0;
+    transform: scale(0.6);
+    transition: opacity var(--dur-base) var(--ease-out),
+                transform var(--dur-base) var(--ease-out);
+  }
+  .sys-tile.active .sys-tile-check {
+    opacity: 1;
+    transform: scale(1);
+  }
+  .sys-tile-value {
+    font-family: var(--font-heading);
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -0.015em;
+    line-height: 1.1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .sys-tile:not(.active) .sys-tile-value { color: var(--text-faint); }
+  .sys-tile.active.done .sys-tile-value { color: var(--status-ok); }
+  .sys-tile-sub {
+    font-family: var(--font-mono);
+    font-size: 0.58rem;
+    color: var(--text-muted);
+    letter-spacing: 0.02em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .sys-tile:not(.active) .sys-tile-sub { color: var(--text-faint); }
+
+  /* ═══ Carousel phase/steps (LEFT column after v10) ═══ */
+  .carousel-col {
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    min-height: 0;
+  }
+
+  /* Section headers inside carousel-col */
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding: 0.55rem 0.85rem 0.35rem;
+    gap: 0.75rem;
+    flex-shrink: 0;
+  }
+  .section-header.with-divider {
+    border-top: 1px solid var(--border);
+    padding-top: 0.6rem;
+    margin-top: 0.15rem;
+  }
+  .result-panel .section-header {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0.5rem;
+  }
+  .result-panel .section-header.with-divider {
+    border-top: 0;
+    margin-top: 0;
+    padding-top: 0.55rem;
+  }
+  .section-label {
+    font-family: var(--font-heading);
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+  }
+  .section-label::before {
+    content: '';
+    width: 3px;
+    height: 12px;
+    background: var(--accent);
+    border-radius: 2px;
+    display: inline-block;
+  }
+  .section-hint {
+    font-family: var(--font-mono);
+    font-size: 0.58rem;
+    color: var(--text-muted);
+    letter-spacing: 0.04em;
+    text-align: right;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+  }
+
+  /* Phase strip — overview bar showing all phases */
+  .phase-strip {
+    display: flex;
+    gap: 0.35rem;
+    padding: 0.1rem 0.75rem 0.6rem;
+    flex-shrink: 0;
+    align-items: stretch;
+  }
+  .phase-chip {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.42rem 0.6rem;
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    cursor: pointer;
+    transition: border-color var(--dur-base) var(--ease-out),
+                background var(--dur-base) var(--ease-out),
+                opacity var(--dur-base) var(--ease-out);
+    overflow: hidden;
+    min-width: 0;
+    position: relative;
+  }
+  .phase-chip:hover:not(.bypassed) { border-color: var(--border-strong); }
+  .phase-chip.active {
+    border-color: var(--accent);
+    background: linear-gradient(90deg, var(--accent-softer), var(--bg-primary) 60%);
+  }
+  .phase-chip.done { border-color: rgba(76, 175, 80, 0.35); }
+  .phase-chip.bypassed {
+    cursor: default;
+    background: var(--bg-secondary);
+    border-style: dashed;
+    border-color: var(--border);
+  }
+  .phase-chip.bypassed .chip-name {
+    color: var(--text-faint);
+    text-decoration: line-through;
+    text-decoration-color: var(--text-faint);
+  }
+  .phase-chip.bypassed .chip-meta {
+    color: var(--text-faint);
+  }
+  .phase-chip.bypassed .num {
+    background: transparent;
+    color: var(--text-faint);
+    border: 1px dashed var(--border-strong);
+  }
+  .phase-chip .num {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 0.7rem;
+    background: var(--bg-tertiary);
+    color: var(--text-muted);
+    padding: 0.18rem 0.4rem;
+    border-radius: 4px;
+    letter-spacing: -0.01em;
+    flex-shrink: 0;
+    transition: background var(--dur-base) var(--ease-out),
+                color var(--dur-base) var(--ease-out);
+  }
+  .phase-chip.active .num { background: var(--accent); color: var(--bg-primary); }
+  .phase-chip.done .num { background: var(--status-ok); color: var(--text-primary); }
+  .phase-chip .chip-body { flex: 1; min-width: 0; }
+  .phase-chip .chip-name {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 0.78rem;
+    line-height: 1.15;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .phase-chip.bypassed .chip-name { color: var(--text-muted); }
+  .phase-chip .chip-meta {
+    font-family: var(--font-mono);
+    font-size: 0.55rem;
+    color: var(--text-muted);
+    margin-top: 0.05rem;
+    letter-spacing: 0.02em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .phase-chip .chip-bypass {
+    font-family: var(--font-mono);
+    font-size: 0.5rem;
+    background: var(--status-skip);
+    color: var(--bg-primary);
+    padding: 0.08rem 0.3rem;
+    border-radius: 2.5px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-left: auto;
+    flex-shrink: 0;
+  }
+
+  /* Carousel viewport + track */
+  .carousel-viewport {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+    min-height: 0;
+  }
+  .carousel-track {
+    display: flex;
+    height: 100%;
+    width: 100%;
+    transition: transform var(--dur-slower) var(--ease-out);
+    will-change: transform;
+  }
+  .carousel-slide {
+    flex: 0 0 100%;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 0.85rem 0.85rem 0.75rem;
+    gap: 0.55rem;
+    overflow: hidden;
+  }
+
+  /* Slide header */
+  .slide-head {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.8rem;
+    padding-bottom: 0.55rem;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .slide-num {
+    min-width: 44px;
+    height: 34px;
+    padding: 0 0.5rem;
+    background: var(--bg-primary);
+    border: 2px solid var(--accent);
+    color: var(--accent);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 0.82rem;
+    flex-shrink: 0;
+    letter-spacing: -0.01em;
+  }
+  .slide-num.done { border-color: var(--status-ok); color: var(--status-ok); }
+  .slide-head .slide-body { flex: 1; min-width: 0; }
+  .slide-head .slide-title {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    color: var(--text-primary);
+    font-size: 1.05rem;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+  }
+  .slide-head .slide-sub {
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    color: var(--text-muted);
+    margin-top: 0.15rem;
+    letter-spacing: 0.02em;
+  }
+  .slide-head .slide-time {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--accent);
+    font-weight: 700;
+    white-space: nowrap;
+    margin-top: 0.25rem;
+  }
+  .slide-head .slide-time.muted { color: var(--text-muted); }
+  .slide-head .slide-time.done { color: var(--status-ok); }
+
+  /* Steps inside slide — vertical list, compact + one active expanded */
+  .slide-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    overflow-y: auto;
+    flex: 1 1 auto;
+    min-height: 0;
+    padding: 0.1rem 0.05rem 0.1rem 0;
+  }
+  .slide-steps::-webkit-scrollbar { width: 5px; }
+  .slide-steps::-webkit-scrollbar-track { background: transparent; }
+  .slide-steps::-webkit-scrollbar-thumb { background: var(--bg-tertiary); border-radius: 3px; }
+
+  .step-card {
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+    transition: border-color var(--dur-base) var(--ease-out),
+                background var(--dur-base) var(--ease-out);
+  }
+  .step-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: transparent;
+    transition: background var(--dur-base) var(--ease-out);
+  }
+  .step-card.done::before { background: var(--status-ok); }
+  .step-card.active {
+    border-color: var(--accent);
+    background: linear-gradient(90deg, var(--accent-softer) 0%, var(--bg-primary) 60%);
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+  .step-card.active::before { background: var(--accent); }
+
+  .step-compact {
+    display: grid;
+    grid-template-columns: minmax(44px, auto) minmax(0, 1fr) auto auto;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.48rem 0.75rem;
+    font-size: 0.78rem;
+    min-width: 0;
+  }
+  .step-card.active .step-compact { display: none; }
+
+  .step-compact .step-id {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 0.62rem;
+    color: var(--text-muted);
+    background: var(--bg-tertiary);
+    padding: 0.18rem 0.42rem;
+    border-radius: 4px;
+    letter-spacing: 0.04em;
+    text-align: center;
+    white-space: nowrap;
+  }
+  .step-card.done .step-compact .step-id { background: var(--status-ok); color: var(--text-primary); }
+  .step-compact .step-name {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 0.82rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    letter-spacing: -0.005em;
+    min-width: 0;
+  }
+  .step-card.idle .step-compact .step-name {
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+  .step-compact .step-status-mini {
+    font-family: var(--font-mono);
+    font-size: 0.56rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .step-card.done .step-compact .step-status-mini { color: var(--status-ok); }
+  .step-compact .mini-dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: currentColor;
+    flex-shrink: 0;
+  }
+  .step-compact .step-time-mini {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    color: var(--accent);
+    font-weight: 600;
+    min-width: 46px;
+    text-align: right;
+    white-space: nowrap;
+  }
+  .step-card.idle .step-compact .step-time-mini { color: var(--text-faint); }
+
+  .step-expanded {
+    display: none;
+    padding: 0.8rem 1rem 0.85rem;
+    flex-direction: column;
+    gap: 0.55rem;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden;
+  }
+  .step-card.active .step-expanded {
+    display: flex;
+    animation: step-enter var(--dur-slow) var(--ease-out);
+  }
+  @keyframes step-enter {
+    from { opacity: 0; transform: translateY(4px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .step-exp-head {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.7rem;
+    flex-shrink: 0;
+  }
+  .step-exp-head .step-id {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 0.72rem;
+    background: var(--accent);
+    color: var(--bg-primary);
+    padding: 0.22rem 0.55rem;
+    border-radius: 5px;
+    letter-spacing: 0.05em;
+    flex-shrink: 0;
+    margin-top: 0.05rem;
+  }
+  .step-exp-head .name-block { flex: 1; min-width: 0; }
+  .step-exp-head .step-name {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
+  .step-exp-head .step-desc {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    line-height: 1.4;
+    margin-top: 0.15rem;
+  }
+  .step-exp-head .live-tag {
+    font-family: var(--font-mono);
+    font-size: 0.58rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.25rem 0.55rem;
+    border: 1px solid var(--accent);
+    border-radius: 5px;
+    background: var(--accent-soft);
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 0.05rem;
+  }
+  .step-exp-head .live-tag .live-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    position: relative;
+  }
+  .step-exp-head .live-tag .live-dot::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    background: var(--accent);
+    opacity: 0.4;
+    animation: halo 1.6s var(--ease-in-out) infinite;
+  }
+
+  .step-exp-progress {
+    height: 4px;
+    background: var(--bg-tertiary);
+    border-radius: 2px;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .step-exp-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--gold-mid));
+    width: 0%;
+    transition: width var(--dur-fast) linear;
+    border-radius: 2px;
+  }
+
+  .step-log {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    overflow-y: auto;
+    flex: 1 1 auto;
+    min-height: 0;
+    padding: 0.1rem 0;
+    line-height: 1.55;
+  }
+  .step-log::-webkit-scrollbar { width: 4px; }
+  .step-log::-webkit-scrollbar-thumb { background: var(--bg-tertiary); border-radius: 2px; }
+  .step-log .log-line {
+    opacity: 0;
+    transform: translateY(4px);
+    animation: log-enter var(--dur-base) var(--ease-out) forwards;
+    padding: 0.12rem 0;
+  }
+  @keyframes log-enter { to { opacity: 1; transform: translateY(0); } }
+  .step-log .log-icon { display: inline-block; width: 1.1em; }
+  .step-log .log-icon.ok   { color: var(--status-ok); }
+  .step-log .log-icon.info { color: var(--status-info); }
+  .step-log .log-icon.warn { color: var(--status-warn); }
+  .step-log .log-hl        { color: var(--accent); }
+
+  /* ═══ Floating toolbar ═══ */
+  .playbar {
+    position: fixed;
+    bottom: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-strong);
+    border-radius: 14px;
+    padding: 0.55rem 0.85rem;
+    box-shadow:
+      var(--shadow-lg),
+      0 0 0 1px rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(12px) saturate(180%);
+    -webkit-backdrop-filter: blur(12px) saturate(180%);
+    flex-wrap: nowrap;
+    max-width: calc(100vw - 2rem);
+    animation: toolbar-enter var(--dur-slower) var(--ease-out);
+  }
+  @keyframes toolbar-enter {
+    from { opacity: 0; transform: translateX(-50%) translateY(12px); }
+    to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+  }
+  .btn-ctrl {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    width: 34px; height: 34px;
+    border-radius: 9px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background var(--dur-fast) var(--ease-out),
+                border-color var(--dur-fast) var(--ease-out),
+                color var(--dur-fast) var(--ease-out),
+                transform var(--dur-fast) var(--ease-out);
+  }
+  .btn-ctrl:hover {
+    background: var(--bg-primary);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .btn-ctrl:active { transform: scale(0.96); }
+  .btn-ctrl.primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--bg-primary);
+    width: auto;
+    padding: 0 1.1rem;
+    font-weight: 700;
+    gap: 0.4rem;
+    text-transform: uppercase;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    font-family: var(--font-heading);
+    box-shadow: 0 4px 14px rgba(255, 212, 0, 0.22);
+  }
+  .btn-ctrl.primary:hover:not(:disabled) {
+    background: var(--accent-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(255, 212, 0, 0.3);
+  }
+  .btn-ctrl.primary:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-ctrl.primary.running {
+    background: var(--status-fail);
+    border-color: var(--status-fail);
+    color: var(--text-primary);
+    box-shadow: 0 4px 14px rgba(244, 67, 54, 0.28);
+  }
+  .btn-ctrl.primary.running:hover {
+    background: #d32f2f;
+    box-shadow: 0 6px 18px rgba(244, 67, 54, 0.36);
+  }
+  .btn-ctrl svg { width: 14px; height: 14px; }
+  .progress-wrap { flex: 1; min-width: 240px; max-width: 380px; }
+  .progress-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    color: var(--text-muted);
+    margin-bottom: 0.3rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+  }
+  .progress-label .current-step {
+    color: var(--text-primary);
+    font-weight: 600;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+  .progress-label .pct { color: var(--accent); font-weight: 700; }
+  .progress-track {
+    height: 6px;
+    background: var(--bg-tertiary);
+    border-radius: 3px;
+    overflow: hidden;
+    position: relative;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--gold-mid));
+    width: 0%;
+    transition: width var(--dur-slow) var(--ease-out);
+    border-radius: 3px;
+    position: relative;
+  }
+  .progress-fill::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.5) 50%,
+      transparent 100%
+    );
+    transform: translateX(-100%);
+    animation: progress-sheen 1.8s linear infinite;
+  }
+  .progress-fill.done::after { display: none; }
+  @keyframes progress-sheen {
+    0%   { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 200;
+    background: linear-gradient(
+      135deg,
+      rgba(76, 175, 80, 0.22),
+      rgba(76, 175, 80, 0.08)
+    );
+    border: 1px solid rgba(76, 175, 80, 0.5);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 11px;
+    padding: 0.8rem 1rem;
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    max-width: 380px;
+    opacity: 0;
+    transform: translateX(400px);
+    transition: opacity var(--dur-slow) var(--ease-out),
+                transform var(--dur-slow) var(--ease-out);
+    pointer-events: none;
+  }
+  .toast.visible {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: auto;
+  }
+  .toast-icon {
+    width: 34px; height: 34px;
+    border-radius: 9px;
+    background: var(--status-ok);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    color: var(--text-primary);
+    font-size: 1rem;
+  }
+  .toast-body h4 {
+    font-family: var(--font-heading);
+    color: var(--text-primary);
+    font-size: 0.84rem;
+    margin-bottom: 0.18rem;
+    font-weight: 700;
+    letter-spacing: -0.005em;
+  }
+  .toast-body p {
+    color: var(--text-muted);
+    font-size: 0.72rem;
+    line-height: 1.35;
+  }
+
+  /* Responsive */
+  @media (max-width: 1100px) {
+    .main { grid-template-columns: 1fr 320px; }
+  }
+  @media (max-width: 900px) {
+    html, body { height: auto; overflow: auto; }
+    .app { height: auto; grid-template-rows: auto auto auto; padding-bottom: 6.5rem; }
+    .main { grid-template-columns: 1fr; }
+    .carousel-viewport { min-height: 400px; }
+  }
+</style>
+</head>
+<body>
+  <div class="dotted-pattern top-right"></div>
+  <div class="dotted-pattern bottom-left"></div>
+
+  <div class="app">
+
+    <!-- TOPBAR -->
+    <div class="topbar">
+      <div class="brand">
+        <div class="brand-text"><span class="product">AI Migrator</span></div>
+      </div>
+      <div class="top-meta">
+        <span class="route-chip" id="routeChip">
+          <span class="label">MODE:</span>
+          <span class="path" id="routePath">Vision → DOM Enrichment → Migration</span>
+        </span>
+        <div class="live-clock" id="liveClock">
+          <span class="dot"></span>
+          <span id="clockText">00:00:00</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- MAIN: control+carousel (LEFT) + results (RIGHT) -->
+    <div class="main">
+      <!-- LEFT: control column (config + carousel) -->
+      <div class="control-col">
+
+        <!-- ▸ Configuration block ▸ -->
+        <div class="config-panel">
+          <div class="section-header">
+            <span class="section-label">Configuration</span>
+            <span class="section-hint">Inputs · route selector</span>
+          </div>
+          <div class="config-stack">
+            <!-- Live Site URLs -->
+            <div class="cfg-field">
+              <div class="cfg-label-row">
+                <span class="dot"></span>LIVE SITE URL(S)
+                <span class="badge" id="urlCountBadge">1 URL</span>
+              </div>
+              <div class="cfg-input-wrap">
+                <span class="icon-left">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/>
+                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                  </svg>
+                </span>
+                <textarea id="inpUrls" rows="1" placeholder="https://example.com/page (one per line)">https://niteco.com</textarea>
+              </div>
+              <div class="cfg-meta" id="inpUrlsMeta">One URL per line</div>
+            </div>
+
+            <!-- Figma File -->
+            <div class="cfg-field" id="figmaField">
+              <div class="cfg-label-row">
+                <span class="dot"></span>FIGMA FILE
+                <label class="toggle-switch" title="Enable Figma design input">
+                  <input type="checkbox" id="figmaToggle" />
+                  <span class="track"></span>
+                  <span class="toggle-label" id="figmaToggleLabel">OFF</span>
+                </label>
+              </div>
+              <div class="cfg-input-wrap">
+                <span class="icon-left">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M8 3h8a3 3 0 0 1 0 6H8a3 3 0 0 1 0-6z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                    <path d="M8 15a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/>
+                  </svg>
+                </span>
+                <input type="text" id="inpFigma" placeholder="enable to use design input" value="figma.com/file/abc123" disabled />
+              </div>
+              <div class="cfg-meta info" id="inpFigmaMeta">Toggle off → website-only input</div>
+            </div>
+
+            <!-- Optimizely GraphID -->
+            <div class="cfg-field" id="graphField">
+              <div class="cfg-label-row">
+                <span class="dot"></span>OPTIMIZELY GRAPHID
+                <label class="toggle-switch" title="Enable graph-assisted fast path">
+                  <input type="checkbox" id="graphToggle" />
+                  <span class="track"></span>
+                  <span class="toggle-label" id="graphToggleLabel">OFF</span>
+                </label>
+              </div>
+              <div class="cfg-input-wrap">
+                <span class="icon-left">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="5" r="3"/><circle cx="5" cy="19" r="3"/><circle cx="19" cy="19" r="3"/>
+                    <line x1="12" y1="8" x2="5" y2="16"/><line x1="12" y1="8" x2="19" y2="16"/>
+                  </svg>
+                </span>
+                <input type="text" id="inpGraphId" placeholder="enable + paste your Optimizely GraphID" value="opti-graph-a1b2c3" disabled />
+              </div>
+              <div class="cfg-meta info" id="inpGraphIdMeta">Toggle off → DOM enrichment route</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ▸ Carousel ▸ -->
+        <div class="carousel-col">
+          <div class="section-header">
+            <span class="section-label">Phase Timeline</span>
+            <span class="section-hint">4 phases · active mode highlighted</span>
+          </div>
+          <div class="phase-strip" id="phaseStrip"></div>
+
+          <div class="section-header with-divider">
+            <span class="section-label">Detailed Steps</span>
+            <span class="section-hint" id="currentPhaseHint">Waiting for run</span>
+          </div>
+          <div class="carousel-viewport">
+            <div class="carousel-track" id="carouselTrack"></div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT: results column -->
+      <div class="results-col">
+        <div class="result-panel flex1">
+          <div class="section-header">
+            <span class="section-label">Extracted Blocks</span>
+            <span class="section-hint" id="blocksCount">Populated as steps complete</span>
+          </div>
+          <div class="result-panel-body" id="blocksList">
+            <div class="result-empty">
+              No blocks yet
+              <span class="hint">Populated as steps complete</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="result-panel flex1">
+          <div class="section-header">
+            <span class="section-label">System Output</span>
+            <span class="section-hint" id="outputStatus">Waiting for run</span>
+          </div>
+          <div class="result-panel-body" id="outputBody">
+            <div class="result-empty">
+              No output yet
+              <span class="hint">Results appear as pipeline runs</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- FLOATING TOOLBAR -->
+  <div class="playbar">
+    <button class="btn-ctrl primary" id="playBtn" title="Start / Stop">
+      <svg viewBox="0 0 24 24" fill="currentColor" id="playIcon"><path d="M8 5v14l11-7z"/></svg>
+      <span id="playLabel">Start</span>
+    </button>
+    <button class="btn-ctrl" id="restartBtn" title="Reset">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+      </svg>
+    </button>
+    <div class="progress-wrap">
+      <div class="progress-label">
+        <span>Current: <span class="current-step" id="currentStepLabel">Ready · Press START to run</span></span>
+        <span class="pct" id="overallPct">0%</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="overallFill"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toastSuccess">
+    <div class="toast-icon">✓</div>
+    <div class="toast-body">
+      <h4>Migration complete</h4>
+      <p id="toastText">All steps succeeded · blueprint delivered</p>
+    </div>
+  </div>
+
+<script>
+// ═════════════════════════════════════════════════════════════════════════
+//  AI MIGRATOR v8 — Horizontal carousel · left results · right phases
+// ═════════════════════════════════════════════════════════════════════════
+
+const PHASES = [
+  { id: 'vision',  num: '01',   name: 'Vision',            sub: 'Understand the page from website & design' },
+  { id: 'combine', num: '02·A', name: 'Vision × Graph',    sub: 'Fast-path — graph-assisted combination' },
+  { id: 'orch',    num: '02·B', name: 'DOM Enrichment',    sub: 'Auto reconstruction from DOM' },
+  { id: 'mig',     num: '03',   name: 'Migration',         sub: 'Publish the page into the CMS' },
+];
+
+const STEPS_ALL = [
+  { id: 'V1', phase: 'vision', name: 'Crawling from Live Site',
+    desc: 'Capture desktop & mobile views from the live website.',
+    durationSimMs: 5500, realTime: '1m 25s',
+    logs: [
+      { icon: 'i', cls: 'info', text: 'Navigating to source URL (desktop + mobile)' },
+      { icon: '✓', cls: 'ok',   text: 'Page loaded · capturing <span class="log-hl">2,685 elements</span>' },
+      { icon: '↓', cls: 'info', text: 'Downloading media · <span class="log-hl">239/253 files</span> + 10 inline SVGs' },
+      { icon: '✓', cls: 'ok',   text: 'Screenshots saved · desktop + mobile' },
+      { icon: '✓', cls: 'ok',   text: 'HTML + computed styles captured' },
+    ]
+  },
+  { id: 'V1_5', phase: 'vision', name: 'Crawling from Figma',
+    desc: 'Read the design file to understand intended layout and styling.',
+    durationSimMs: 4500, realTime: '48s',
+    requiresFigma: true,
+    logs: [
+      { icon: 'i', cls: 'info', text: 'Fetching Figma file <span class="log-hl" id="figmaIdEcho">…</span>' },
+      { icon: '✓', cls: 'ok',   text: 'Design file parsed · <span class="log-hl">12 frames</span> · 48 components' },
+      { icon: '✓', cls: 'ok',   text: 'Design tokens + layout grid extracted' },
+    ]
+  },
+  { id: 'V2', phase: 'vision', name: 'AI Analysis',
+    desc: 'Combine website and design inputs to identify page structure and sections.',
+    durationSimMs: 6500, realTime: '5m 34s',
+    logs: [
+      { icon: 'i', cls: 'info', text: 'Preparing desktop + mobile views for analysis...' },
+      { icon: '✓', cls: 'ok',   text: 'Mobile analysis received <span class="log-hl">(2m 38s)</span>' },
+      { icon: '✓', cls: 'ok',   text: 'Desktop analysis received <span class="log-hl">(2m 56s)</span>' },
+      { icon: '✓', cls: 'ok',   text: 'Token mapping applied · layouts merged' },
+    ]
+  },
+
+  { id: 'G1', phase: 'combine', name: 'Graph Fetch',
+    desc: 'Retrieve structured content from the CMS.',
+    durationSimMs: 3500, realTime: '3.1s',
+    logs: [
+      { icon: 'i', cls: 'info', text: 'Fetching graph <span class="log-hl" id="g1IdEcho">…</span>' },
+      { icon: '✓', cls: 'ok',   text: 'Graph loaded · <span class="log-hl">84 nodes</span> · 142 edges' },
+    ]
+  },
+  { id: 'G2', phase: 'combine', name: 'Alignment',
+    desc: 'Match CMS content with visual sections identified earlier.',
+    durationSimMs: 4800, realTime: '8.2s',
+    action: 'populateBlocks',
+    logs: [
+      { icon: 'i', cls: 'info', text: 'Aligning captured regions with graph nodes...' },
+      { icon: '✓', cls: 'ok',   text: 'Matched <span class="log-hl">76/84 nodes</span> with layout regions' },
+      { icon: '✓', cls: 'ok',   text: 'Resolved <span class="log-hl">13 content blocks</span>' },
+    ]
+  },
+  { id: 'G3', phase: 'combine', name: 'Smart Merge',
+    desc: 'Use CMS data when available, fallback to website/design if needed.',
+    durationSimMs: 3800, realTime: '4.8s',
+    logs: [
+      { icon: 'i', cls: 'info', text: 'Resolving conflicts across sources...' },
+      { icon: '✓', cls: 'ok',   text: 'Merged <span class="log-hl">68 from CMS</span> · 8 from website · 0 conflicts' },
+    ]
+  },
+  { id: 'G4', phase: 'combine', name: 'Final Output',
+    desc: 'Generate the CMS-ready page directly (JSON).',
+    durationSimMs: 3000, realTime: '1.2s',
+    logs: [ { icon: '✓', cls: 'ok', text: 'Blueprint written · <span class="log-hl">blueprint.json</span>' } ]
+  },
+
+  { id: 'S1', phase: 'orch', name: 'HTML Loading',
+    desc: 'Load the page source for processing.',
+    durationSimMs: 2800, realTime: '820ms',
+    logs: [
+      { icon: 'i', cls: 'info', text: 'Loading HTML source from disk...' },
+      { icon: '✓', cls: 'ok',   text: 'HTML loaded · <span class="log-hl">412 KB</span>' },
+    ]
+  },
+  { id: 'S2', phase: 'orch', name: 'Preprocessing',
+    desc: 'Clean and prepare content for accurate extraction.',
+    durationSimMs: 2500, realTime: '140ms',
+    logs: [ { icon: '✓', cls: 'ok', text: 'HTML normalized · structure validated' } ]
+  },
+  { id: 'S3', phase: 'orch', name: 'Schema Loading',
+    desc: 'Load CMS structure to define the target format.',
+    durationSimMs: 3200, realTime: '4.59s',
+    logs: [
+      { icon: 'i', cls: 'info', text: 'Loading display template mapping...' },
+      { icon: '✓', cls: 'ok',   text: 'Schema ready · <span class="log-hl">42 element types</span>' },
+    ]
+  },
+  { id: 'S4', phase: 'orch', name: 'Block Extraction',
+    desc: 'Identify key content sections (banners, text, etc.).',
+    durationSimMs: 5500, realTime: '40.30s',
+    action: 'populateBlocks',
+    logs: [
+      { icon: 'i', cls: 'info', text: 'Running contextual block extraction...' },
+      { icon: '✓', cls: 'ok',   text: 'Extraction complete · <span class="log-hl">13 blocks</span> identified' },
+      { icon: 'i', cls: 'info', text: '10 matched · 1 promoted · 3 skipped' },
+    ]
+  },
+  { id: 'S5', phase: 'orch', name: 'HTML Chunking',
+    desc: 'Split the page into manageable sections.',
+    durationSimMs: 2800, realTime: '460ms',
+    logs: [
+      { icon: 'i', cls: 'info', text: 'Splitting HTML by block ranges...' },
+      { icon: '✓', cls: 'ok',   text: '<span class="log-hl">9 chunks</span> generated · 4 extra blocks validated' },
+    ]
+  },
+  { id: 'S6', phase: 'orch', name: 'Content Analysis',
+    desc: 'Extract text, images, and links in structured form.',
+    durationSimMs: 4500, realTime: '14.57s',
+    logs: [
+      { icon: 'i', cls: 'info', text: 'Analyzing <span class="log-hl">9 matched blocks</span> in parallel...' },
+      { icon: '✓', cls: 'ok',   text: 'All blocks processed · cumulative <span class="log-hl">88.16s</span>' },
+    ]
+  },
+  { id: 'S7', phase: 'orch', name: 'Blueprint Merge',
+    desc: 'Combine all sections into a complete page.',
+    durationSimMs: 2500, realTime: '10ms',
+    logs: [ { icon: '✓', cls: 'ok', text: 'Blueprint merged · <span class="log-hl">9 blocks</span> · 0 conflicts' } ]
+  },
+  { id: 'S8', phase: 'orch', name: 'CSS Enrichment',
+    desc: 'Align styling with the design system (incl. Figma if provided).',
+    durationSimMs: 2500, realTime: '40ms',
+    logs: [ { icon: '✓', cls: 'ok', text: '<span class="log-hl">68 settings</span> enriched · 4 tokens mapped' } ]
+  },
+  { id: 'S9', phase: 'orch', name: 'Final Output',
+    desc: 'Generate the final CMS-ready page (JSON).',
+    durationSimMs: 2500, realTime: '10ms',
+    logs: [ { icon: '✓', cls: 'ok', text: 'Refined blueprint written · <span class="log-hl">blueprint.json</span>' } ]
+  },
+
+  { id: 'M1', phase: 'mig', name: 'API Migration',
+    desc: 'Send the page into the CMS automatically.',
+    durationSimMs: 3500, realTime: '2.35s',
+    logs: [
+      { icon: 'i', cls: 'info', text: 'Collecting 1 blueprint for upload...' },
+      { icon: 'i', cls: 'info', text: 'POST blueprint · <span class="log-hl">142 KB</span>' },
+      { icon: '✓', cls: 'ok',   text: 'Migration API accepted blueprint <span class="log-hl">(1.85s)</span>' },
+      { icon: '✓', cls: 'ok',   text: 'Response <span class="log-hl">201</span> · page created · <span class="log-hl">/en/home</span>' },
+    ]
+  },
+];
+
+const BLOCKS = [
+  { idx: 1,  name: 'HeroBanner',          status: 'matched',  sel: 13 },
+  { idx: 2,  name: 'IntroText',           status: 'matched',  sel: 7 },
+  { idx: 3,  name: 'ESGRecognition',      status: 'matched',  sel: 9 },
+  { idx: 4,  name: 'SustainabilityLib_H', status: 'promoted', sel: 6 },
+  { idx: 5,  name: 'SustainabilityLib',   status: 'matched',  sel: 35 },
+  { idx: 6,  name: 'LowCarbonInsights',   status: 'matched',  sel: 18 },
+  { idx: 7,  name: 'CaseStudies',         status: 'matched',  sel: 22 },
+  { idx: 8,  name: 'LeadershipQuote',     status: 'matched',  sel: 4 },
+  { idx: 9,  name: 'GetInTouch',          status: 'matched',  sel: 8 },
+  { idx: 10, name: 'RelatedLinks',        status: 'matched',  sel: 12 },
+  { idx: 11, name: 'FooterNav',           status: 'skipped',  sel: 56 },
+  { idx: 12, name: 'HeaderNav',           status: 'skipped',  sel: 41 },
+  { idx: 13, name: 'OneTrustConsent',     status: 'skipped',  sel: 164 },
+];
+
+// ═════════════════════════════════════════════════════════════════════════
+//  STATE
+// ═════════════════════════════════════════════════════════════════════════
+let speed = 1;
+let isPlaying = false;
+let currentStepIdx = -1;
+let runStartTime = 0;
+let pendingTimeouts = [];
+let clockAnimFrame = null;
+let ACTIVE_STEPS = [];
+let ACTIVE_PHASE_IDS = [];
+let currentCarouselIdx = 0;
+
+const $ = s => document.querySelector(s);
+const $$ = s => document.querySelectorAll(s);
+
+function isFigmaEnabled() {
+  return $('#figmaToggle').checked
+    && $('#inpFigma').value.trim().length > 0;
+}
+function isGraphEnabled() {
+  return $('#graphToggle').checked && $('#inpGraphId').value.trim().length > 0;
+}
+function getRoute() {
+  const hasGraph = isGraphEnabled();
+  const hasFigma = isFigmaEnabled();
+  return hasGraph
+    ? { hasGraph: true,  hasFigma, active: ['vision', 'combine', 'mig'], bypassed: ['orch'] }
+    : { hasGraph: false, hasFigma, active: ['vision', 'orch', 'mig'],    bypassed: ['combine'] };
+}
+function computeActiveSteps() {
+  const route = getRoute();
+  ACTIVE_PHASE_IDS = route.active;
+  ACTIVE_STEPS = STEPS_ALL.filter(s => {
+    if (!route.active.includes(s.phase)) return false;
+    if (s.requiresFigma && !route.hasFigma) return false;
+    return true;
+  });
+  return route;
+}
+function getActivePhases() {
+  return PHASES.filter(p => ACTIVE_PHASE_IDS.includes(p.id));
+}
+function totalSimMs() { return ACTIVE_STEPS.reduce((a, s) => a + s.durationSimMs, 0); }
+function parseRealTime(t) {
+  if (!t) return 0;
+  let m = t.match(/(\d+)m\s*([\d.]+)s/);
+  if (m) return parseInt(m[1]) * 60 + parseFloat(m[2]);
+  m = t.match(/([\d.]+)s/);
+  if (m) return parseFloat(m[1]);
+  m = t.match(/([\d.]+)ms/);
+  if (m) return parseFloat(m[1]) / 1000;
+  return 0;
+}
+function totalRealSec() { return ACTIVE_STEPS.reduce((a, s) => a + parseRealTime(s.realTime), 0); }
+function formatTotalTime(sec) {
+  if (sec < 60) return Math.round(sec) + 's';
+  const m = Math.floor(sec / 60);
+  const s = Math.round(sec % 60);
+  return `${m}m ${String(s).padStart(2,'0')}s`;
+}
+
+// ─── Build phase strip (all 4 phases, top of carousel) ──────────────
+function buildPhaseStrip() {
+  const route = getRoute();
+  const strip = $('#phaseStrip');
+  strip.innerHTML = '';
+  PHASES.forEach(phase => {
+    const isBypassed = route.bypassed.includes(phase.id);
+    const activePhases = getActivePhases();
+    const slideIdx = activePhases.findIndex(p => p.id === phase.id);
+
+    const el = document.createElement('div');
+    el.className = 'phase-chip' + (isBypassed ? ' bypassed' : '');
+    el.id = 'chip-' + phase.id;
+    const stepCount = STEPS_ALL.filter(s => {
+      if (s.phase !== phase.id) return false;
+      if (s.requiresFigma && !route.hasFigma) return false;
+      return true;
+    }).length;
+    el.innerHTML = `
+      <div class="num">${phase.num}</div>
+      <div class="chip-body">
+        <div class="chip-name">${phase.name}</div>
+        <div class="chip-meta">${isBypassed ? 'not used in this route' : stepCount + ' step' + (stepCount > 1 ? 's' : '')}</div>
+      </div>
+      ${isBypassed ? '<span class="chip-bypass">Skip</span>' : ''}
+    `;
+    if (!isBypassed && slideIdx >= 0) {
+      el.addEventListener('click', () => { if (!isPlaying) goToSlide(slideIdx); });
+    }
+    strip.appendChild(el);
+  });
+}
+
+// ─── Build carousel slides (one per active phase) ───────────────────
+function buildCarousel() {
+  computeActiveSteps();
+  const route = getRoute();
+  const track = $('#carouselTrack');
+  track.innerHTML = '';
+
+  const activePhases = getActivePhases();
+  activePhases.forEach((phase, slideIdx) => {
+    const stepsForPhase = ACTIVE_STEPS.filter(s => s.phase === phase.id);
+    const slide = document.createElement('div');
+    slide.className = 'carousel-slide';
+    slide.id = 'slide-' + phase.id;
+    slide.innerHTML = `
+      <div class="slide-head">
+        <div class="slide-num" id="slideNum-${phase.id}">${phase.num}</div>
+        <div class="slide-body">
+          <div class="slide-title">${phase.name}</div>
+          <div class="slide-sub">${phase.sub} · ${stepsForPhase.length} step${stepsForPhase.length > 1 ? 's' : ''}</div>
+        </div>
+        <div class="slide-time muted" id="slideTime-${phase.id}">—</div>
+      </div>
+      <div class="slide-steps" id="steps-${phase.id}"></div>
+    `;
+    track.appendChild(slide);
+
+    const stepsContainer = slide.querySelector('.slide-steps');
+    stepsForPhase.forEach(step => {
+      const card = document.createElement('div');
+      card.className = 'step-card idle';
+      card.id = 'step-' + step.id;
+      card.innerHTML = `
+        <div class="step-compact">
+          <span class="step-id">${step.id.replace('_', '.')}</span>
+          <span class="step-name">${step.name}</span>
+          <span class="step-status-mini">
+            <span class="mini-dot"></span>
+            <span class="status-text">Pending</span>
+          </span>
+          <span class="step-time-mini">—</span>
+        </div>
+        <div class="step-expanded">
+          <div class="step-exp-head">
+            <span class="step-id">${step.id.replace('_', '.')}</span>
+            <div class="name-block">
+              <div class="step-name">${step.name}</div>
+              <div class="step-desc">${step.desc}</div>
+            </div>
+            <span class="live-tag"><span class="live-dot"></span>RUNNING</span>
+          </div>
+          <div class="step-exp-progress"><div class="step-exp-progress-fill"></div></div>
+          <div class="step-log" id="log-${step.id}"></div>
+        </div>
+      `;
+      stepsContainer.appendChild(card);
+    });
+  });
+
+  $('#routePath').textContent = route.hasGraph
+    ? 'Vision → Vision × Graph → Migration'
+    : 'Vision → DOM Enrichment → Migration';
+
+  currentCarouselIdx = 0;
+  updateCarouselPosition();
+}
+
+function updateCarouselPosition() {
+  const track = $('#carouselTrack');
+  track.style.transform = `translateX(-${currentCarouselIdx * 100}%)`;
+}
+function goToSlide(idx) {
+  currentCarouselIdx = idx;
+  updateCarouselPosition();
+}
+
+function setPhaseState(phaseId, state) {
+  // Phase chip (top strip)
+  const chip = $('#chip-' + phaseId);
+  if (chip && !chip.classList.contains('bypassed')) {
+    chip.classList.remove('active', 'done');
+    if (state) chip.classList.add(state);
+  }
+  // Slide num
+  const num = $('#slideNum-' + phaseId);
+  if (num) {
+    num.classList.remove('done');
+    if (state === 'done') num.classList.add('done');
+  }
+}
+
+function appendStepLog(stepId, line) {
+  const logEl = $('#log-' + stepId);
+  if (!logEl) return;
+  const el = document.createElement('div');
+  el.className = 'log-line';
+  const icon = line.icon ? `<span class="log-icon ${line.cls || ''}">${line.icon}</span> ` : '';
+  el.innerHTML = `${icon}${line.text}`;
+  logEl.appendChild(el);
+  // Echo inputs in logs
+  if (stepId === 'G1') {
+    const echo = logEl.querySelector('#g1IdEcho');
+    if (echo) echo.textContent = $('#inpGraphId').value.trim() || '—';
+  }
+  if (stepId === 'V1_5') {
+    const echo = logEl.querySelector('#figmaIdEcho');
+    if (echo) echo.textContent = $('#inpFigma').value.trim() || '—';
+  }
+  logEl.scrollTop = logEl.scrollHeight;
+}
+
+function resetRunUI() {
+  $$('.step-card').forEach(c => {
+    c.classList.remove('active', 'done');
+    c.classList.add('idle');
+    const txt = c.querySelector('.status-text');
+    if (txt) txt.textContent = 'Pending';
+    const tm = c.querySelector('.step-time-mini');
+    if (tm) tm.textContent = '—';
+    const fill = c.querySelector('.step-exp-progress-fill');
+    if (fill) fill.style.width = '0%';
+    const log = c.querySelector('.step-log');
+    if (log) log.innerHTML = '';
+  });
+  $$('.phase-chip').forEach(c => {
+    if (!c.classList.contains('bypassed')) c.classList.remove('active', 'done');
+  });
+  getActivePhases().forEach(p => {
+    const t = $('#slideTime-' + p.id);
+    if (t) { t.textContent = '—'; t.classList.remove('done'); t.classList.add('muted'); }
+    const n = $('#slideNum-' + p.id);
+    if (n) n.classList.remove('done');
+  });
+  goToSlide(0);
+}
+
+function populateBlocks() {
+  const list = $('#blocksList');
+  list.innerHTML = '';
+  BLOCKS.forEach((b, i) => {
+    const row = document.createElement('div');
+    const cls = b.status === 'skipped' ? 'skip' : b.status === 'promoted' ? 'promoted' : '';
+    row.className = `block-row ${cls}`;
+    row.style.animationDelay = (i * 40) + 'ms';
+    row.innerHTML = `
+      <span class="idx">${String(b.idx).padStart(2, '0')}</span>
+      <span class="bname">${b.name}</span>
+      <span class="bstatus ${b.status}">${b.status}</span>
+      <span class="bsel">${b.sel} sel</span>
+    `;
+    list.appendChild(row);
+  });
+  const matched = BLOCKS.filter(b => b.status === 'matched').length;
+  const promoted = BLOCKS.filter(b => b.status === 'promoted').length;
+  const skipped = BLOCKS.filter(b => b.status === 'skipped').length;
+  $('#blocksCount').textContent = `${BLOCKS.length} total · ${matched} matched · ${skipped} skipped`;
+}
+
+// ─── System Output progressive cards ───────────────────────────────
+const outputState = {
+  sourceScanned: false,
+  blocksDetected: false,
+  blueprintReady: false,
+  delivered: false,
+};
+
+function renderOutput() {
+  const body = $('#outputBody');
+  const statusChip = $('#outputStatus');
+
+  // 4 tiles, always rendered in a 2x2 grid; each tile activates when state fires
+  const url = $('#inpUrls').value.split('\n').map(l => l.trim()).filter(Boolean)[0] || '—';
+  const sources = isFigmaEnabled() ? 'Website + Figma' : 'Website only';
+  const matched = BLOCKS.filter(b => b.status === 'matched').length;
+  const totalBlocks = BLOCKS.length;
+  const skipped = BLOCKS.filter(b => b.status === 'skipped').length;
+
+  const tiles = [
+    {
+      key: 'sourceScanned',
+      active: outputState.sourceScanned,
+      label: 'Source',
+      icon: '🌐',
+      value: outputState.sourceScanned ? (url.length > 28 ? url.slice(0, 25) + '…' : url) : '—',
+      sub: outputState.sourceScanned ? sources : 'waiting',
+    },
+    {
+      key: 'blocksDetected',
+      active: outputState.blocksDetected,
+      label: 'Blocks',
+      icon: '🧩',
+      value: outputState.blocksDetected ? `${matched} / ${totalBlocks}` : '—',
+      sub: outputState.blocksDetected ? `${skipped} skipped` : 'waiting',
+    },
+    {
+      key: 'blueprintReady',
+      active: outputState.blueprintReady,
+      label: 'Blueprint',
+      icon: '📦',
+      value: outputState.blueprintReady ? '68 settings' : '—',
+      sub: outputState.blueprintReady ? '4 tokens mapped' : 'waiting',
+    },
+    {
+      key: 'delivered',
+      active: outputState.delivered,
+      label: 'Delivered',
+      icon: '🚀',
+      value: outputState.delivered ? '201 OK' : '—',
+      sub: outputState.delivered ? '/en/home' : 'waiting',
+      final: true,
+    },
+  ];
+
+  const anyActive = tiles.some(t => t.active);
+  if (!anyActive) {
+    body.innerHTML = '<div class="result-empty">No output yet<span class="hint">Results appear as pipeline runs</span></div>';
+    statusChip.textContent = 'Waiting for run';
+    return;
+  }
+
+  const tilesHtml = tiles.map(t => {
+    const cls = t.active ? (t.final ? 'sys-tile active done' : 'sys-tile active') : 'sys-tile';
+    return `
+      <div class="${cls}">
+        <div class="sys-tile-head">
+          <span class="sys-tile-icon">${t.icon}</span>
+          <span class="sys-tile-label">${t.label}</span>
+          <span class="sys-tile-check">${t.active ? '✓' : ''}</span>
+        </div>
+        <div class="sys-tile-value">${t.value}</div>
+        <div class="sys-tile-sub">${t.sub}</div>
+      </div>
+    `;
+  }).join('');
+
+  body.innerHTML = `<div class="sys-grid">${tilesHtml}</div>`;
+
+  if (outputState.delivered) {
+    statusChip.textContent = '✓ Delivered';
+  } else {
+    const doneCount = Object.values(outputState).filter(Boolean).length;
+    statusChip.textContent = `${doneCount} / 4 · running`;
+  }
+}
+function markOutput(key) { outputState[key] = true; renderOutput(); }
+function resetOutput() {
+  outputState.sourceScanned = false;
+  outputState.blocksDetected = false;
+  outputState.blueprintReady = false;
+  outputState.delivered = false;
+  renderOutput();
+}
+
+// ─── Run loop ──────────────────────────────────────────────────────
+function schedule(fn, delay) {
+  const id = setTimeout(fn, delay);
+  pendingTimeouts.push(id);
+  return id;
+}
+function clearAllTimeouts() {
+  pendingTimeouts.forEach(t => clearTimeout(t));
+  pendingTimeouts = [];
+}
+
+function runStep(i) {
+  if (!isPlaying) return;
+  if (i >= ACTIVE_STEPS.length) { finishRun(); return; }
+  currentStepIdx = i;
+  const step = ACTIVE_STEPS[i];
+  const card = $('#step-' + step.id);
+  if (!card) { runStep(i + 1); return; }
+
+  const isFirstOfPhase = i === 0 || ACTIVE_STEPS[i - 1].phase !== step.phase;
+  if (isFirstOfPhase) {
+    if (i > 0) {
+      const prevPhase = ACTIVE_STEPS[i - 1].phase;
+      setPhaseState(prevPhase, 'done');
+      const prevTotal = ACTIVE_STEPS
+        .filter(s => s.phase === prevPhase)
+        .reduce((a, s) => a + parseRealTime(s.realTime), 0);
+      const prevTime = $('#slideTime-' + prevPhase);
+      if (prevTime) {
+        prevTime.textContent = '✓ ' + formatTotalTime(prevTotal);
+        prevTime.classList.remove('muted');
+        prevTime.classList.add('done');
+      }
+    }
+    setPhaseState(step.phase, 'active');
+    const activePhases = getActivePhases();
+    const phaseIdx = activePhases.findIndex(p => p.id === step.phase);
+    schedule(() => { goToSlide(phaseIdx); }, 100);
+    const runningTime = $('#slideTime-' + step.phase);
+    if (runningTime) { runningTime.textContent = 'Running…'; runningTime.classList.remove('muted', 'done'); }
+    // Update section hint
+    const phaseMeta = PHASES.find(p => p.id === step.phase);
+    const hint = $('#currentPhaseHint');
+    if (phaseMeta && hint) {
+      hint.textContent = `Phase ${phaseMeta.num} · ${phaseMeta.name}`;
+    }
+  }
+
+  card.classList.remove('idle');
+  card.classList.add('active');
+  const statusText = card.querySelector('.status-text');
+  if (statusText) statusText.textContent = 'Running';
+
+  $('#currentStepLabel').innerHTML = `<span style="color:var(--accent)">${step.id.replace('_','.')}</span> · ${step.name}`;
+
+  const duration = step.durationSimMs / speed;
+  const n = step.logs ? step.logs.length : 0;
+  const logStartDelay = 450 / speed;
+  const logSpan = Math.max(duration - logStartDelay - 200, 200);
+  const logInterval = n > 1 ? logSpan / (n - 1) : 0;
+
+  if (step.logs) {
+    step.logs.forEach((line, li) => {
+      schedule(() => {
+        if (isPlaying) appendStepLog(step.id, line);
+      }, logStartDelay + li * logInterval);
+    });
+  }
+
+  const fill = card.querySelector('.step-exp-progress-fill');
+  const stepStart = performance.now();
+  const progressTick = () => {
+    if (!isPlaying) return;
+    const elapsed = performance.now() - stepStart;
+    const pct = Math.min(100, (elapsed / duration) * 100);
+    if (fill) fill.style.width = pct + '%';
+    if (elapsed < duration) requestAnimationFrame(progressTick);
+  };
+  requestAnimationFrame(progressTick);
+
+  schedule(() => {
+    if (isPlaying) completeStep(i);
+  }, duration);
+}
+
+function completeStep(i) {
+  const step = ACTIVE_STEPS[i];
+  const card = $('#step-' + step.id);
+  card.classList.remove('active', 'idle');
+  card.classList.add('done');
+  const st = card.querySelector('.status-text');
+  if (st) st.textContent = 'Done';
+  const tm = card.querySelector('.step-time-mini');
+  if (tm) tm.textContent = step.realTime;
+
+  if (step.action === 'populateBlocks') populateBlocks();
+
+  // System Output triggers
+  if (step.id === 'V2') markOutput('sourceScanned');
+  if (step.id === 'S4' || step.id === 'G2') markOutput('blocksDetected');
+  if (step.id === 'S9' || step.id === 'G4') markOutput('blueprintReady');
+  if (step.id === 'M1') markOutput('delivered');
+
+  const completed = i + 1;
+  const pct = Math.round((completed / ACTIVE_STEPS.length) * 100);
+  $('#overallFill').style.width = pct + '%';
+  $('#overallPct').textContent = pct + '%';
+
+  schedule(() => {
+    if (isPlaying) runStep(i + 1);
+  }, 650 / speed);
+}
+
+function finishRun() {
+  isPlaying = false;
+  cancelAnimationFrame(clockAnimFrame);
+  if (ACTIVE_STEPS.length > 0) {
+    const lastPhase = ACTIVE_STEPS[ACTIVE_STEPS.length - 1].phase;
+    setPhaseState(lastPhase, 'done');
+    const lastTotal = ACTIVE_STEPS
+      .filter(s => s.phase === lastPhase)
+      .reduce((a, s) => a + parseRealTime(s.realTime), 0);
+    const lastTime = $('#slideTime-' + lastPhase);
+    if (lastTime) {
+      lastTime.textContent = '✓ ' + formatTotalTime(lastTotal);
+      lastTime.classList.remove('muted');
+      lastTime.classList.add('done');
+    }
+  }
+  const totalSec = totalRealSec();
+  const totalStr = formatTotalTime(totalSec);
+  $('#playLabel').textContent = 'Run Again';
+  $('#playIcon').innerHTML = '<path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/>';
+  $('#playBtn').classList.remove('running');
+  $('#playBtn').disabled = !validateInputs();
+  $('#liveClock').classList.remove('running');
+  $('#liveClock').classList.add('done');
+  const m = Math.floor(totalSec / 60); const s = Math.round(totalSec % 60);
+  $('#clockText').textContent = `00:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  $('#overallFill').classList.add('done');
+  $('#overallFill').style.width = '100%';
+  $('#overallPct').textContent = '100%';
+  $('#currentStepLabel').innerHTML = '<span style="color:var(--status-ok)">Complete</span> · ' + totalStr;
+  const hintDone = $('#currentPhaseHint');
+  if (hintDone) hintDone.textContent = '✓ Pipeline complete · blueprint delivered';
+
+  const route = getRoute();
+  $('#toastText').textContent = route.hasGraph
+    ? `Graph-assisted migration finished in ${totalStr}`
+    : `DOM enrichment finished in ${totalStr}`;
+  $('#toastSuccess').classList.add('visible');
+  schedule(() => { $('#toastSuccess').classList.remove('visible'); }, 5000);
+}
+
+function tickClock() {
+  if (!isPlaying) return;
+  const elapsedReal = performance.now() - runStartTime;
+  const totalSim = totalSimMs();
+  const ratio = Math.min(1, elapsedReal / (totalSim / speed));
+  const totalSec = totalRealSec();
+  const displayedSec = Math.floor(ratio * totalSec);
+  const m = Math.floor(displayedSec / 60);
+  const s = displayedSec % 60;
+  $('#clockText').textContent = `00:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  clockAnimFrame = requestAnimationFrame(tickClock);
+}
+
+// ─── Validation + field updaters ───────────────────────────────────
+function isValidUrl(str) {
+  if (!str) return false;
+  try {
+    const u = new URL(str.trim());
+    return u.protocol === 'http:' || u.protocol === 'https:';
+  } catch { return false; }
+}
+function parseUrls() {
+  return $('#inpUrls').value.split('\n').map(l => l.trim()).filter(Boolean);
+}
+function updateUrlCount() {
+  const urls = parseUrls();
+  $('#urlCountBadge').textContent = urls.length + (urls.length === 1 ? ' URL' : ' URLs');
+  const ta = $('#inpUrls');
+  if (urls.length > 1) ta.classList.add('multi-mode');
+  else ta.classList.remove('multi-mode');
+}
+function updateGraphField() {
+  const on = $('#graphToggle').checked;
+  const inp = $('#inpGraphId');
+  const field = $('#graphField');
+  const meta = $('#inpGraphIdMeta');
+  const label = field.querySelector('.toggle-label');
+  inp.disabled = !on;
+  field.classList.toggle('disabled', !on);
+  if (label) label.textContent = on ? 'ON' : 'OFF';
+  if (!on) {
+    meta.textContent = 'Toggle off → DOM enrichment route';
+    meta.className = 'cfg-meta info';
+    return;
+  }
+  const id = inp.value.trim();
+  if (!id) {
+    meta.textContent = 'Enter an Optimizely GraphID';
+    meta.className = 'cfg-meta fail';
+  } else if (!/^[a-zA-Z0-9_\-.]+$/.test(id)) {
+    meta.textContent = 'Only letters, digits, dash, underscore, dot';
+    meta.className = 'cfg-meta fail';
+  } else {
+    meta.textContent = '✓ Graph-assisted fast-path enabled';
+    meta.className = 'cfg-meta ok';
+  }
+}
+function updateFigmaField() {
+  const on = $('#figmaToggle').checked;
+  const inp = $('#inpFigma');
+  const field = $('#figmaField');
+  const meta = $('#inpFigmaMeta');
+  const label = $('#figmaToggleLabel');
+  inp.disabled = !on;
+  field.classList.toggle('disabled', !on);
+  if (label) label.textContent = on ? 'ON' : 'OFF';
+  if (!on) {
+    meta.textContent = 'Toggle off → website-only input';
+    meta.className = 'cfg-meta info';
+    return;
+  }
+  const val = inp.value.trim();
+  if (!val) {
+    meta.textContent = 'Enter a Figma file URL or ID';
+    meta.className = 'cfg-meta fail';
+  } else {
+    meta.textContent = '✓ Design input enabled';
+    meta.className = 'cfg-meta ok';
+  }
+}
+function updateRouteAndRebuild() {
+  if (isPlaying) return;
+  updateGraphField();
+  updateFigmaField();
+  buildPhaseStrip();
+  buildCarousel();
+  refreshStartButton();
+}
+function validateInputs() {
+  const urls = parseUrls();
+  const urlMeta = $('#inpUrlsMeta');
+  let ok = true;
+  if (urls.length === 0) {
+    urlMeta.textContent = 'At least one URL required';
+    urlMeta.className = 'cfg-meta fail';
+    ok = false;
+  } else {
+    const invalid = urls.filter(u => !isValidUrl(u));
+    if (invalid.length) {
+      urlMeta.textContent = `${invalid.length} invalid URL(s)`;
+      urlMeta.className = 'cfg-meta fail';
+      ok = false;
+    } else {
+      urlMeta.textContent = `✓ ${urls.length} valid URL${urls.length > 1 ? 's' : ''}`;
+      urlMeta.className = 'cfg-meta ok';
+    }
+  }
+  const graphOn = $('#graphToggle').checked;
+  const graphId = $('#inpGraphId').value.trim();
+  if (graphOn) {
+    if (!graphId) ok = false;
+    else if (!/^[a-zA-Z0-9_\-.]+$/.test(graphId)) ok = false;
+  }
+  // Figma toggle ON → URL required
+  if ($('#figmaToggle').checked && !$('#inpFigma').value.trim()) ok = false;
+  return ok;
+}
+function refreshStartButton() {
+  const ok = validateInputs();
+  if (isPlaying) return;
+  $('#playBtn').disabled = !ok;
+}
+
+// ─── Event listeners ───────────────────────────────────────────────
+$('#inpUrls').addEventListener('input', () => {
+  updateUrlCount();
+  validateInputs();
+  refreshStartButton();
+});
+$('#inpGraphId').addEventListener('input', updateRouteAndRebuild);
+$('#graphToggle').addEventListener('change', updateRouteAndRebuild);
+$('#inpFigma').addEventListener('input', updateRouteAndRebuild);
+$('#figmaToggle').addEventListener('change', updateRouteAndRebuild);
+
+function start() {
+  if (!validateInputs()) return;
+  clearAllTimeouts();
+  cancelAnimationFrame(clockAnimFrame);
+  resetRunUI();
+  resetOutput();
+  $('#overallFill').style.width = '0%';
+  $('#overallFill').classList.remove('done');
+  $('#overallPct').textContent = '0%';
+  $('#toastSuccess').classList.remove('visible');
+  $('#blocksList').innerHTML = '<div class="result-empty">No blocks yet<span class="hint">Populated as steps complete</span></div>';
+  $('#blocksCount').textContent = 'Populated as steps complete';
+  $('#outputStatus').textContent = 'Waiting for run';
+  currentStepIdx = -1;
+
+  isPlaying = true;
+  runStartTime = performance.now();
+  $('#playLabel').textContent = 'Stop';
+  $('#playIcon').innerHTML = '<path d="M6 6h12v12H6z"/>';
+  $('#playBtn').classList.add('running');
+  $('#liveClock').classList.add('running');
+  $('#liveClock').classList.remove('done');
+  runStep(0);
+  tickClock();
+}
+
+function stop() {
+  isPlaying = false;
+  clearAllTimeouts();
+  cancelAnimationFrame(clockAnimFrame);
+  $('#playLabel').textContent = 'Start';
+  $('#playIcon').innerHTML = '<path d="M8 5v14l11-7z"/>';
+  $('#playBtn').classList.remove('running');
+  $('#liveClock').classList.remove('running');
+}
+
+function reset() {
+  clearAllTimeouts();
+  cancelAnimationFrame(clockAnimFrame);
+  isPlaying = false;
+  currentStepIdx = -1;
+  updateUrlCount();
+  updateGraphField();
+  updateFigmaField();
+  buildPhaseStrip();
+  buildCarousel();
+  resetRunUI();
+  resetOutput();
+  $('#overallFill').style.width = '0%';
+  $('#overallFill').classList.remove('done');
+  $('#overallPct').textContent = '0%';
+  $('#toastSuccess').classList.remove('visible');
+  $('#blocksList').innerHTML = '<div class="result-empty">No blocks yet<span class="hint">Populated as steps complete</span></div>';
+  $('#blocksCount').textContent = 'Populated as steps complete';
+  $('#outputStatus').textContent = 'Waiting for run';
+  $('#currentStepLabel').textContent = 'Ready · Press START to run';
+  const hintEl = $('#currentPhaseHint');
+  if (hintEl) hintEl.textContent = 'Waiting for run';
+  $('#liveClock').classList.remove('running', 'done');
+  $('#clockText').textContent = '00:00:00';
+  $('#playLabel').textContent = 'Start';
+  $('#playIcon').innerHTML = '<path d="M8 5v14l11-7z"/>';
+  $('#playBtn').classList.remove('running');
+  refreshStartButton();
+}
+
+$('#playBtn').addEventListener('click', () => { if (isPlaying) stop(); else start(); });
+$('#restartBtn').addEventListener('click', reset);
+
+// Init
+updateUrlCount();
+updateGraphField();
+updateFigmaField();
+buildPhaseStrip();
+buildCarousel();
+refreshStartButton();
+</script>
+</body>
+</html>

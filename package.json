@@ -1,0 +1,10 @@
+{
+  "name": "ai-migrator-dashboard",
+  "version": "1.0.0",
+  "private": true,
+  "description": "AI Migrator pipeline dashboard for Niteco sales pitches",
+  "scripts": {
+    "dev": "npx serve .",
+    "start": "npx serve ."
+  }
+}
